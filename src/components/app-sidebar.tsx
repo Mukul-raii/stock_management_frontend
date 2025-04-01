@@ -29,8 +29,8 @@ const items: SidebarItem[] = [
     url: "/stocks/addStock",
   },
   {
-    title: "Search",
-    url: "#",
+    title: "BillHistory",
+    url: "/billhistory",
   },
   {
     title: "Settings",
@@ -47,7 +47,7 @@ export function AppSidebar() {
   }
 
   return (
-  <Sidebar className="w-64 h-screen bg-gray-800 text-black">
+  <Sidebar  variant="sidebar" className="w-64 h-screen bg-gray-800 text-black ">
     <SidebarContent className="p-4">
     <SidebarMenu>
       {items.map((item) => (
