@@ -1,18 +1,20 @@
+import { DailyExpenseType } from "@/components/stock_add";
 import axios from "axios";
 
 interface FormData {
   product: string;
   size: number;
-  quantity: number;
   price: number;
   shop: string;
 }
 
-export const getStocks = async (shop:string) => {
+export const getStocks = async (shop: string) => {
   try {
     const response = await axios.get(
       `http://localhost:3000/stock/get_all_stocks?Shop=${shop}`
     );
+    console.log("your stock ", response);
+
     return response.data;
   } catch (error) {
     console.log(error);
@@ -35,3 +37,37 @@ export const add_new_stock = async (formdata: FormData) => {
     return null;
   }
 };
+
+export const addNewBillHistory = async (
+  dailyExpense: DailyExpenseType,
+  cashLeft: number,
+  date: Date,
+  stockData: [],
+  shopName: string
+) => {
+  try {
+    console.log(dailyExpense, cashLeft);
+
+    const response = await axios.post(
+      "http://localhost:3000/billhistory/generate_bill_history",
+      { ...dailyExpense, cashLeft, date, stockData, shopName }
+    );
+
+    return response.status;
+  } catch (error) {
+    console.error("Error in addNewBillHistory:", error);
+
+    return null;
+  }
+};
+
+
+export const receiveNewStock =async (shopName:string,newQuantities:{[key:number]:number})=>{
+  try {
+    const response = await axios.put("http://localhost:3000/stock/update_stock",{shopName,newQuantities});
+
+    return response.status
+  } catch (error) {
+    console.error("Error in addNewBillHistory:", error);
+  }
+}

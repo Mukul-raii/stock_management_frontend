@@ -14,15 +14,18 @@ setShop(shopId)
 }
 
     return (
-      <div className="m-3">
+      <div className="m-3 w-screen flex  justify-center items-start">
+        <div className="p-2 w-[800px]">
+
         <Tabs defaultValue="Amariya">
-      <Shop_tab  toogleShop={handleShopChange}>
+      <Shop_tab  toogleShop={handleShopChange} selectedShop={shop}>
 
       <TabsContent value={shop}>
          <StockAdd shopName={shop}/>
         </TabsContent>
       </Shop_tab>
         </Tabs>
+        </div>
       </div>
     );
   }

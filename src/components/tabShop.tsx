@@ -5,12 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface TabsProps {
   toogleShop: (shopId:string)=>void;
   children: React.ReactNode
+  selectedShop: string;
 }
 
-export default function Shop_Tab({toogleShop, children}:TabsProps) {
+export default function Shop_Tab({toogleShop, children,selectedShop}:TabsProps) {
     
     return(
-        <Tabs defaultValue="Amariya"
+        <Tabs value={selectedShop}
         onValueChange={(value) =>{
             if(value==="Amariya") toogleShop("Amariya")
             if(value==="Vamanpuri") toogleShop("Vamanpuri")

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { add_new_stock} from "@/app/action/stock";
+import { LucideArrowDownToDot } from "lucide-react";
 
 
 
@@ -11,15 +12,14 @@ export default function AddNewStock() {
     const [formData, setFormData] = useState({
         product: "",
         size: 0,
-        quantity:0,
         price:0,
         shop:""
     });
 
-    const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } =e.target;
+    const handleChange = (e:React.ChangeEvent<HTMLInputElement> | HTMLSelectElement) => {
+        const { name, value } =e.target
         
-        const parsedValue = name==='size' || name==='quantity' || name==='price' ? parseInt(value) : value
+        const parsedValue = name==='size' || name==='price' ? parseInt(value) : value
 
         setFormData((prevData) => ({
             ...prevData,
@@ -30,7 +30,6 @@ export default function AddNewStock() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData);
         const res = await add_new_stock(formData)
         console.log(res);
         
@@ -38,6 +37,15 @@ export default function AddNewStock() {
 
     return (
         <div className="container mx-auto py-10 px-4 md:px-6">
+            <div className="flex items-center space-x-4">
+        <div className="p-2 bg-primary/10 rounded-full">
+          <LucideArrowDownToDot className="h-6 w-6 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">New Stock</h1>
+          <p className="text-muted-foreground">Manage new stock inventory for your shops</p>
+        </div>
+      </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="product">Product</label>
@@ -65,20 +73,6 @@ export default function AddNewStock() {
               </div>
   
               <div className="space-y-2">
-                <label htmlFor="quantity">Quantity</label>
-                <Input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  placeholder="Enter quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-  
-  
-              <div className="space-y-2">
                 <label htmlFor="price">Price</label>
              
                 <div className="relative">
@@ -101,15 +95,11 @@ export default function AddNewStock() {
               <div className="space-y-2">
                 <label htmlFor="price">Shop</label>
                 <div className="relative">
-                  <Input
-                    id="shop"
-                    name="shop"
-                    type="string"
-                    className="pl-8"
-                    value={formData.shop}
-                    onChange={handleChange}
-                    required
-                  />
+                <select id="shop" name="shop" value={formData.shop} onChange={handleChange} className="w-full border rounded p-2">
+              <option value="">Select a shop</option>
+              <option value="Amariya">Amariya</option>
+              <option value="Vamanpuri">Vamanpuri</option>
+            </select>
                 </div>
               </div>
 
