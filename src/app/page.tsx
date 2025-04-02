@@ -18,7 +18,40 @@ import {
 } from "recharts"
 import { ArrowUpRight, ArrowDownRight, IndianRupee, Building2, Wallet, CreditCard } from "lucide-react"
 
-const formatCurrency = (value) => {
+// Define TypeScript interfaces for your data structure
+interface LocationData {
+  totalSale: number;
+  totalCashReceived: number;
+  totalUpiPayment: number;
+  totalBreakageCash: number;
+  totalTransportation: number;
+  totalRent: number;
+}
+
+interface RecordData {
+  Cash: number;
+  CurrentBank: number;
+  none: number;
+}
+
+interface BankTransactionData {
+  credit: number;
+  debit: number;
+}
+
+interface DashboardData {
+  TotalCash: {
+    [location: string]: LocationData;
+  };
+  Record: {
+    [category: string]: RecordData;
+  };
+  BankTransactions: {
+    [bank: string]: BankTransactionData;
+  };
+}
+
+const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -27,8 +60,8 @@ const formatCurrency = (value) => {
 }
 
 export default function Home() {
-  const [dashboardData, setDashboardData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     async function fetchData() {
