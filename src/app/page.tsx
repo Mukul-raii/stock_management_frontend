@@ -191,8 +191,7 @@ export default function Home() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
-                      <Tooltip formatter={(value) => formatCurrency(value)} />
-                      <Legend />
+                      <Tooltip formatter={(value)=>formatCurrency(Number(value))}></Tooltip>
                       <Bar dataKey="totalSale" name="Total Sales" fill="#10b981" />
                       <Bar dataKey="totalCashReceived" name="Cash Received" fill="#3b82f6" />
                     </BarChart>
@@ -274,7 +273,7 @@ export default function Home() {
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                           </Pie>
-                          <Tooltip formatter={(value) => formatCurrency(value)} />
+                          <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                           <Legend />
                         </PieChart>
                       </ResponsiveContainer>

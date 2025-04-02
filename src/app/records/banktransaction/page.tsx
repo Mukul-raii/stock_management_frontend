@@ -34,7 +34,7 @@ export default function BankTransaction() {
     setFeedback({ status: null, message: "" });
     
     try {
-      const res = await bankTransaction(amount, transactionType, selectedAccount);
+      const res = await bankTransaction(parseInt(amount), transactionType, selectedAccount);
       
       if (res) {
         setFeedback({
