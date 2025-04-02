@@ -1,5 +1,5 @@
 import { SessionNavBar} from "@/components/ui/sidebar";
-
+import { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,12 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
     <body>
-    <div className="flex h-screen w-screen flex-row">
-    <SessionNavBar />
-    <main className="flex h-screen grow flex-col overflow-auto">
-                {children}
     
-    </main>
+    <div className="flex h-screen w-screen flex-row">
+      <SessionNavBar />
+      <main className="flex h-screen grow flex-col overflow-auto">
+      {children}
+       </main>
     </div>
 
     </body>
