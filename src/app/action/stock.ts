@@ -11,7 +11,7 @@ interface FormData {
 export const getStocks = async (shop: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/stock/get_all_stocks?Shop=${shop}`
+      `${process.env.NEXT_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`
     );
     console.log("your stock ", response);
 
@@ -26,7 +26,7 @@ export const add_new_stock = async (formdata: FormData) => {
   try {
     console.log(formdata);
     const response = await axios.post(
-      "http://localhost:3000/stock/add_new_stock",
+      `${process.env.NEXT_BACKEND_API}/stock/add_new_stock`,
       formdata
     );
 
@@ -56,7 +56,7 @@ export const addNewBillHistory = async (
   try {
 
     const response = await axios.post(
-      "http://localhost:3000/billhistory/generate_bill_history",
+      `${process.env.NEXT_BACKEND_API}/billhistory/generate_bill_history`,
       { ...dailyExpenses, cashLeft, date, stockData, shopName }
     );
 
@@ -71,7 +71,7 @@ export const addNewBillHistory = async (
 
 export const receiveNewStock =async (shopName:string,newQuantities:{[key:number]:number})=>{
   try {
-    const response = await axios.put("http://localhost:3000/stock/update_stock",{shopName,newQuantities});
+    const response = await axios.put(`${process.env.NEXT_BACKEND_API}/stock/update_stock`,{shopName,newQuantities});
 
     return response.status
   } catch (error) {
@@ -83,7 +83,7 @@ export const receiveNewStock =async (shopName:string,newQuantities:{[key:number]
 
 export const  transferStock = async(fromshop:string, newQuantities:{[key:number]:number})=>{
   try {
-    const response = await axios.put("http://localhost:3000/stock/transfer_stock",{fromshop,newQuantities});
+    const response = await axios.put(`${process.env.NEXT_BACKEND_API}/stock/transfer_stock`,{fromshop,newQuantities});
 console.log(response.data);
 
     return response.data

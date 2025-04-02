@@ -54,9 +54,12 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
 
   // Filter data based on search term
   const filteredData = data && data.length > 0
-    ? data.filter(item => 
-        formatDate(item.date.toLocaleDateString()).toLowerCase().includes(searchTerm.toLowerCase()))
-    : []
+  ? data.filter(item => {
+      const dateObj = new Date(item.date);
+      return !isNaN(dateObj.getTime()) && 
+             formatDate(dateObj.toLocaleDateString()).toLowerCase().includes(searchTerm.toLowerCase());
+    })
+  : [];
 
   return (
     <div className="space-y-6">
@@ -186,7 +189,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                         <TableCell className="font-medium whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                            {formatDate(invoice.date.toLocaleDateString())}
+                            {invoice.date ? formatDate(new Date(invoice.date).toLocaleDateString()) : "Invalid Date"}
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">

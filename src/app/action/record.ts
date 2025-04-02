@@ -10,7 +10,7 @@ export const addNewRecord= async  (
     selectedPaymentMethod:string
 ) =>{
     try {
-        const res = await axios.post('http://localhost:3000/record/new_record',{recordType,selectedShop,message,amount,date,selectedPaymentMethod})
+        const res = await axios.post(`${process.env.NEXT_BACKEND_API}/record/new_record`,{recordType,selectedShop,message,amount,date,selectedPaymentMethod})
         
         return res.data
 
@@ -24,7 +24,7 @@ export const addNewRecord= async  (
 
 export const getAllRecords=async () => {
     try {
-        const res = await axios.get('http://localhost:3000/record/get_all_records')
+        const res = await axios.get(`${process.env.NEXT_BACKEND_API}/record/get_all_records`)
         return res.data
     } catch (error) {
         return null
