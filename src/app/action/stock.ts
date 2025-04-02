@@ -71,3 +71,17 @@ export const receiveNewStock =async (shopName:string,newQuantities:{[key:number]
     console.error("Error in addNewBillHistory:", error);
   }
 }
+
+
+
+export const  transferStock = async(fromshop:string, newQuantities:{[key:number]:number})=>{
+  try {
+    const response = await axios.put("http://localhost:3000/stock/transfer_stock",{fromshop,newQuantities});
+console.log(response.data);
+
+    return response.data
+    
+  } catch (error) {
+    console.error("error while transfering ")
+  }
+}

@@ -15,52 +15,57 @@ export default function BillhistoryData(data:BillType[]) {
 console.log(data.data);
 
 return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+    <div className="container mx-auto px-2 py-6">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md ">
         <Table className="min-w-full">
           <TableCaption className="text-center text-gray-500 py-4">
             A list of your recent invoices.
           </TableCaption>
           <TableHeader className="bg-gray-100">
             <TableRow>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Sale</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cash Received</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">UPI Payment</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Discount</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Liquor Sale</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Beer Sale</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Breakage Expense</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Canteen Income</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Rate Difference</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Rent</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700">Transportation</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Date</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Total Sale</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Cash Received</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">UPI Payment</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Discount</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Liquor Sale</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Beer Sale</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Breakage Expense</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Canteen Income</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Rate Difference</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Rent</TableHead>
+              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Transportation</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.data && data.data.length > 0 ? (
               data.data.map((invoice) => (
                 <TableRow key={invoice.id} className="border-t hover:bg-gray-50">
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">
-                    {invoice.date instanceof Date ? invoice.date.toLocaleDateString() : 'Invalid date'}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-sm font-medium text-gray-900">₹ {invoice.totalSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.totalCashReceived.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.upiPayment.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">
+                <TableCell className="px-2 py-3 text-sm text-gray-700">
+                  {invoice.date ? (() => {
+                    const dateObj = new Date(invoice.date);
+                    return isNaN(dateObj.getTime())
+                      ? 'Invalid date'
+                      : dateObj.toLocaleDateString();
+                  })() : 'Invalid date'}
+                </TableCell>
+                  <TableCell className="px-2 py-3 text-sm font-medium text-gray-900">₹ {invoice.totalSale.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalCashReceived.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.upiPayment.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">
                     {invoice.discount ? `₹ ${invoice.discount.toLocaleString()}` : '₹ 0'}
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.totalDesiSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.totalBeerSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalDesiSale.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalBeerSale.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">
                     {invoice.breakageCash ? `₹ ${invoice.breakageCash.toLocaleString()}` : '₹ 0'}
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">
                     {invoice.canteenCash ? `₹ ${invoice.canteenCash.toLocaleString()}` : '₹ 0'}
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.rateDiff.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.rent.toLocaleString()}</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-gray-700">₹ {invoice.transportation.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.rateDiff.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.rent.toLocaleString()}</TableCell>
+                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.transportation.toLocaleString()}</TableCell>
                 </TableRow>
               ))
             ) : (
