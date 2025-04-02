@@ -21,8 +21,6 @@ export const addNewRecord = async (
       },
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -42,8 +40,6 @@ export const getAllRecords = async () => {
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/get_all_records`,
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -65,8 +61,6 @@ export const bankTransaction = async (
       { amount, transactionType, selectedAccount },
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -87,8 +81,6 @@ export const getDashboardData = async () => {
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/dashboard`,
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }

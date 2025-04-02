@@ -14,8 +14,6 @@ export const getStocks = async (shop: string) => {
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`,
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -37,8 +35,6 @@ export const add_new_stock = async (formdata: FormData) => {
       formdata,
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -73,8 +69,6 @@ export const addNewBillHistory = async (
       { ...dailyExpenses, cashLeft, date, stockData, shopName },
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -98,8 +92,6 @@ export const receiveNewStock = async (
       { shopName, newQuantities },
       {
         headers: {
-          "Content-Type": "application/json",
-
           Accept: "application/json",
         },
       }
@@ -121,7 +113,6 @@ export const transferStock = async (
       { fromshop, newQuantities },
       {
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
         },
       }
