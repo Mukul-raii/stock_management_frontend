@@ -107,7 +107,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
     let totalLiquorSale = 0;
     let totalBeerSale = 0;
 
-    stockData.forEach((stock)=>{
+    stockData?.forEach((stock)=>{
       const currentQuantity = newQuantities[stock.id] !== undefined ? newQuantities[stock.id] : stock.lastQuantity
       const soldQuantity =stock.quantity-currentQuantity
       
@@ -234,7 +234,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {stockData.map((item) => {
+              {stockData && stockData.map((item) => {
                 const newQuantity = newQuantities[item.id] !== undefined  ? newQuantities[item.id] : item.lastQuantity
                 console.log(newQuantity);
                 const soldQuantity = item.quantity - newQuantity

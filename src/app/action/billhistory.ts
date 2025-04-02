@@ -1,13 +1,14 @@
 import axios from "axios";
 
+export async function fetchBillBookData(shop: string) {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/get_all_bill_history?Shop=${shop}`
+    );
 
-export async function fetchBillBookData(shop:string) {
-try {
-    const res = await axios.get(`${process.env.NEXT_BACKEND_API}billhistory/get_all_bill_history?Shop=${shop}`)
-
-    return res.data
-} catch (error) {
+    return res.data;
+  } catch (error) {
     console.error("Error in fetchBillBookData:", error);
-    return 404
-}
+    return 404;
+  }
 }

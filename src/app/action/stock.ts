@@ -11,7 +11,7 @@ interface FormData {
 export const getStocks = async (shop: string) => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`
     );
     console.log("your stock ", response);
 
@@ -26,7 +26,7 @@ export const add_new_stock = async (formdata: FormData) => {
   try {
     console.log(formdata);
     const response = await axios.post(
-      `${process.env.NEXT_BACKEND_API}/stock/add_new_stock`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/add_new_stock`,
       formdata
     );
 
@@ -39,24 +39,23 @@ export const add_new_stock = async (formdata: FormData) => {
 };
 
 export const addNewBillHistory = async (
-    dailyExpenses: any,
-    cashLeft: number,
-    date: Date,
-    stockData: {
-      id: number;
-      product: string;
-      size: number;
-      quantity: number;
-      price: number;
-      shop: string;
-      lastQuantity: number;
-    }[], // Ensure it's expecting an array
-    shopName: string
-  ) => {
+  dailyExpenses: any,
+  cashLeft: number,
+  date: Date,
+  stockData: {
+    id: number;
+    product: string;
+    size: number;
+    quantity: number;
+    price: number;
+    shop: string;
+    lastQuantity: number;
+  }[], // Ensure it's expecting an array
+  shopName: string
+) => {
   try {
-
     const response = await axios.post(
-      `${process.env.NEXT_BACKEND_API}/billhistory/generate_bill_history`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/generate_bill_history`,
       { ...dailyExpenses, cashLeft, date, stockData, shopName }
     );
 
@@ -68,27 +67,35 @@ export const addNewBillHistory = async (
   }
 };
 
-
-export const receiveNewStock =async (shopName:string,newQuantities:{[key:number]:number})=>{
+export const receiveNewStock = async (
+  shopName: string,
+  newQuantities: { [key: number]: number }
+) => {
   try {
-    const response = await axios.put(`${process.env.NEXT_BACKEND_API}/stock/update_stock`,{shopName,newQuantities});
+    const response = await axios.put(
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/update_stock`,
+      { shopName, newQuantities }
+    );
 
-    return response.status
+    return response.status;
   } catch (error) {
     console.error("Error in addNewBillHistory:", error);
   }
-}
+};
 
-
-
-export const  transferStock = async(fromshop:string, newQuantities:{[key:number]:number})=>{
+export const transferStock = async (
+  fromshop: string,
+  newQuantities: { [key: number]: number }
+) => {
   try {
-    const response = await axios.put(`${process.env.NEXT_BACKEND_API}/stock/transfer_stock`,{fromshop,newQuantities});
-console.log(response.data);
+    const response = await axios.put(
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/transfer_stock`,
+      { fromshop, newQuantities }
+    );
+    console.log(response.data);
 
-    return response.data
-    
+    return response.data;
   } catch (error) {
-    console.error("error while transfering ")
+    console.error("error while transfering ");
   }
-}
+};

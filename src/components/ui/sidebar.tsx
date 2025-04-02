@@ -203,7 +203,7 @@ export function SessionNavBar() {
                       </motion.li>
                     </Link>
                     <Link
-                      href="/competitors"
+                      href="/records/banktransaction"
                       className={cn(
                         "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5   transition hover:bg-muted hover:text-primary",
 
@@ -215,7 +215,7 @@ export function SessionNavBar() {
                       <motion.li variants={variants}>
                         {!isCollapsed && (
                           <p className="ml-2 text-sm font-medium">
-                            Competitors
+                            Bank Transactions
                           </p>
                         )}
                       </motion.li>
