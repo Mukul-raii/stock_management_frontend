@@ -39,18 +39,25 @@ export const add_new_stock = async (formdata: FormData) => {
 };
 
 export const addNewBillHistory = async (
-  dailyExpense: DailyExpenseType,
-  cashLeft: number,
-  date: Date,
-  stockData: [],
-  shopName: string
-) => {
+    dailyExpenses: any,
+    cashLeft: number,
+    date: Date,
+    stockData: {
+      id: number;
+      product: string;
+      size: number;
+      quantity: number;
+      price: number;
+      shop: string;
+      lastQuantity: number;
+    }[], // Ensure it's expecting an array
+    shopName: string
+  ) => {
   try {
-    console.log(dailyExpense, cashLeft);
 
     const response = await axios.post(
       "http://localhost:3000/billhistory/generate_bill_history",
-      { ...dailyExpense, cashLeft, date, stockData, shopName }
+      { ...dailyExpenses, cashLeft, date, stockData, shopName }
     );
 
     return response.status;

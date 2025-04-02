@@ -70,9 +70,12 @@ export type BillType = {
     rent:number;
     salary:number;
     shop:string;
+    discount:number;
     totalBeerSale:number;
     totalCashReceived:number;
     totalDesiSale:number;
+    canteenCash:number;
+    breakageCash:number;
     totalSale:number;
     transportation:number;
     upiPayment:number;

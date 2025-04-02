@@ -8,12 +8,21 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Search, DollarSign, Calendar, Store, FileText, CreditCard } from "lucide-react"
+interface RecordType {
+  id?:number;
+  recordName?: string;
+  shopName?: string;
+  message?: string;
+  amount?: number ;
+  date?:Date;
+  paymentMethod?: string;
+}
 
 export default function ListRecord() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [error, setError] = useState(null)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     async function fetchData() {
@@ -31,15 +40,15 @@ export default function ListRecord() {
     fetchData()
   }, [])
 
-  const filteredData = data.filter(
+  const filteredData = (data as RecordType[]).filter(
     (item) =>
-      item.recordName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.shopName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.message?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.paymentMethod?.toLowerCase().includes(searchTerm.toLowerCase()),
+      item?.recordName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item?.shopName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item?.message?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item?.paymentMethod?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:any) => {
     if (!dateString) return "N/A"
     const dateObj = new Date(dateString)
     return isNaN(dateObj.getTime())
@@ -113,7 +122,7 @@ export default function ListRecord() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredData.map((item) => (
+                  {filteredData.map((item : RecordType) => (
                     <TableRow key={item.id} className="hover:bg-muted/50 transition-colors">
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
@@ -132,7 +141,7 @@ export default function ListRecord() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{formatCurrency(item.amount)}</span>
+                          <span className="font-medium">{formatCurrency(item.amount ?? 0)}</span>
                         </div>
                       </TableCell>
                       <TableCell>

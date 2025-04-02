@@ -55,7 +55,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
   // Filter data based on search term
   const filteredData = data && data.length > 0
     ? data.filter(item => 
-        formatDate(item.date).toLowerCase().includes(searchTerm.toLowerCase()))
+        formatDate(item.date.toLocaleDateString()).toLowerCase().includes(searchTerm.toLowerCase()))
     : []
 
   return (
@@ -186,7 +186,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                         <TableCell className="font-medium whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                            {formatDate(invoice.date)}
+                            {formatDate(invoice.date.toLocaleDateString())}
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
@@ -206,7 +206,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
-                          {invoice.discount ? (
+                          {invoice?.discount ? (
                             <div className="flex items-center gap-2">
                               <TrendingDown className="h-4 w-4 text-red-500" />
                               {formatCurrency(invoice.discount)}

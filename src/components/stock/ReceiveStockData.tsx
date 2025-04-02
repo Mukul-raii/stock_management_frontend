@@ -147,7 +147,7 @@ export default function ReceiveStockData({ shopName, stockData ,refresh}: ShopPr
               </DialogHeader>
 
               <div className="py-4">
-                <Alert variant="outline" className="bg-muted/50">
+                <Alert variant="default" className="bg-muted/50">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Verification Required</AlertTitle>
                   <AlertDescription>

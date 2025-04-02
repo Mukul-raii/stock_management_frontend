@@ -73,17 +73,18 @@ export default function StockAdd({ shopName }: StockAddProps) {
   const id = useId();
   const [date, setDate] = useState<Date>(new Date());
   const [cashLeft, setCashLeft] = useState(0);
-  const [stockData ,setStockData ]= useState([
-    {
-      id: 0,
-      product: "",
-      size: 0,
-      quantity:0,
-      price:0,
-      shop:"",
-      lastQuantity:0
-    }
-  ])
+  const [stockData, setStockData] = useState<
+  {
+    id: number;
+    product: string;
+    size: number;
+    quantity: number;
+    price: number;
+    shop: string;
+    lastQuantity: number;
+  }[]
+>([]);
+
   const [newQuantities, setNewQuantities] = useState<{[key:number]: number}>({});
   const [ isConfirmDialogOpen ,setIsConfirmDialogOpen] = useState(false)
   const [isMainDialogOpen, setIsMainDialogOpen] = useState(false);
@@ -209,7 +210,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2" align="start">
-              <Calendar mode="single" selected={date} onSelect={setDate} />
+              <Calendar required mode="single" selected={date} onSelect={setDate} />
             </PopoverContent>
           </Popover>
         </div>
