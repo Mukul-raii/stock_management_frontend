@@ -40,7 +40,7 @@ export default function ListRecord() {
     fetchData()
   }, [])
 
-  const filteredData = (data as RecordType[]).filter(
+  const filteredData = ( data ? data as RecordType[] : []).filter(
     (item) =>
       item?.recordName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item?.shopName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,7 +165,7 @@ export default function ListRecord() {
             </div>
           )}
           <div className="mt-4 text-sm text-muted-foreground">
-            Showing {filteredData.length} of {data.length} records
+            Showing {filteredData.length} of {data?.length} records
           </div>
         </CardContent>
       </Card>

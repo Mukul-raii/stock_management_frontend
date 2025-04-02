@@ -61,7 +61,11 @@ export default function ReceiveStockPage() {
                     </div>
                   </div>
                 ) : (
-                  <ReceiveStockData stockData={stockData} shopName={shop} refresh={setRefreshCount} />
+                  stockData && stockData.length > 0 ? (
+                    <ReceiveStockData stockData={stockData} shopName={shop} refresh={setRefreshCount} />
+                  ) : (
+                    <div className="text-muted-foreground">No stock data available.</div>
+                  )
                 )}
               </TabsContent>
           </Shop_Tab>

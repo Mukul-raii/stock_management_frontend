@@ -147,7 +147,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
     const result = await getStocks(shopName)  
     console.log({result});
     
-    const updatedstock =result.map((item:ItemType)=>({
+    const updatedstock =result?.map((item:ItemType)=>({
       ...item,
       lastQuantity:item.quantity
     }))

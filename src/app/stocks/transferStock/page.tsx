@@ -108,7 +108,7 @@ return (
 
 
 
-            {isLoading && stockData.length === 0 ? (
+            {isLoading && stockData.length === 0  ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
@@ -126,7 +126,7 @@ return (
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {stockData.length > 0 ? (
+                { stockData &&stockData.length > 0 ? (
                       stockData.map((item: any) => {
                     const hasNewQuantity =
                       newQuantities[item.id] !== undefined &&
