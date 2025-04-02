@@ -19,7 +19,7 @@ export default function AddNewStock() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
   
-      const parsedValue = name === "size" || name === "price" ? parseInt(value) : value.trim();
+      const parsedValue = name === "size" || name === "price" ? parseInt(value) : value.trim().toLowerCase();
   
         setFormData((prevData) => ({
             ...prevData,
