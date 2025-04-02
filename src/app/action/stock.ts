@@ -40,7 +40,7 @@ export const add_new_stock = async (formdata: FormData) => {
       }
     );
 
-    return response.data;
+    return response.status;
   } catch (error) {
     console.log(error);
 

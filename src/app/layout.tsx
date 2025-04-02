@@ -1,6 +1,7 @@
 import { SessionNavBar} from "@/components/ui/sidebar";
 import { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Stock Management",
@@ -22,6 +23,7 @@ export default function RootLayout({
       <main className="flex h-screen grow flex-col overflow-auto">
       {children}
        </main>
+  <Toaster/>
     </div>
 
     </body>
