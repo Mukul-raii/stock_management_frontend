@@ -19,7 +19,7 @@ export default function Shop_Tab({toogleShop, children,selectedShop}:TabsProps) 
         }}>
         <TabsList className="relative h-auto w-full gap-0.`5 bg-transparent p-0 before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-border">
           <TabsTrigger
-            value="Amariya"
+            value="Amariya" 
             className="overflow-hidden rounded-b-none border-x border-t border-border bg-muted py-2 data-[state=active]:z-10 data-[state=active]:shadow-none">
             Amariya
           </TabsTrigger>

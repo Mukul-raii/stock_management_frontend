@@ -1,4 +1,7 @@
-import { BillType } from "@/app/billhistory/page";
+"use client"
+
+import { useState } from "react"
+import { BillType } from "@/app/billhistory/page"
 import {
   Table,
   TableBody,
@@ -7,83 +10,284 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Calendar, CreditCard, DollarSign, FileText, Search, TrendingUp, TrendingDown, Truck, Home, Beer, Wine, IndianRupee } from 'lucide-react'
+import { Badge } from "@/components/ui/badge"
 
+export default function BillhistoryData({ data }: { data: BillType[] }) {
+  const [searchTerm, setSearchTerm] = useState("")
 
-export default function BillhistoryData(data:BillType[]) {
+  // Calculate summary data
+  const summaryData = data && data.length > 0 
+    ? {
+        totalSales: data.reduce((sum, item) => sum + item.totalSale, 0),
+        totalCash: data.reduce((sum, item) => sum + item.totalCashReceived, 0),
+        totalUpi: data.reduce((sum, item) => sum + item.upiPayment, 0),
+        totalLiquor: data.reduce((sum, item) => sum + item.totalDesiSale, 0),
+        totalBeer: data.reduce((sum, item) => sum + item.totalBeerSale, 0),
+      }
+    : null
 
-console.log(data.data);
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 
-return (
-    <div className="container mx-auto px-2 py-6">
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md ">
-        <Table className="min-w-full">
-          <TableCaption className="text-center text-gray-500 py-4">
-            A list of your recent invoices.
-          </TableCaption>
-          <TableHeader className="bg-gray-100">
-            <TableRow>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Date</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Total Sale</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Cash Received</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">UPI Payment</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Discount</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Liquor Sale</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Beer Sale</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Breakage Expense</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Canteen Income</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Rate Difference</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Rent</TableHead>
-              <TableHead className="px-2 py-3 text-left text-sm font-medium text-gray-700">Transportation</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.data && data.data.length > 0 ? (
-              data.data.map((invoice) => (
-                <TableRow key={invoice.id} className="border-t hover:bg-gray-50">
-                <TableCell className="px-2 py-3 text-sm text-gray-700">
-                  {invoice.date ? (() => {
-                    const dateObj = new Date(invoice.date);
-                    return isNaN(dateObj.getTime())
-                      ? 'Invalid date'
-                      : dateObj.toLocaleDateString();
-                  })() : 'Invalid date'}
-                </TableCell>
-                  <TableCell className="px-2 py-3 text-sm font-medium text-gray-900">₹ {invoice.totalSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalCashReceived.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.upiPayment.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">
-                    {invoice.discount ? `₹ ${invoice.discount.toLocaleString()}` : '₹ 0'}
-                  </TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalDesiSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.totalBeerSale.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">
-                    {invoice.breakageCash ? `₹ ${invoice.breakageCash.toLocaleString()}` : '₹ 0'}
-                  </TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">
-                    {invoice.canteenCash ? `₹ ${invoice.canteenCash.toLocaleString()}` : '₹ 0'}
-                  </TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.rateDiff.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.rent.toLocaleString()}</TableCell>
-                  <TableCell className="px-2 py-3 text-sm text-gray-700">₹ {invoice.transportation.toLocaleString()}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={12} className="text-center py-8 text-gray-500">
-                  <div className="flex flex-col items-center justify-center">
-                    <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <p className="text-lg font-medium">No invoice data available</p>
-                    <p className="text-sm">Please select a different shop or check back later</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Invalid date'
+    const dateObj = new Date(dateString)
+    return isNaN(dateObj.getTime())
+      ? 'Invalid date'
+      : dateObj.toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        })
+  }
+
+  // Filter data based on search term
+  const filteredData = data && data.length > 0
+    ? data.filter(item => 
+        formatDate(item.date).toLowerCase().includes(searchTerm.toLowerCase()))
+    : []
+
+  return (
+    <div className="space-y-6">
+      {/* Summary Cards */}
+      {summaryData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Card className="bg-gradient-to-br from-blue-50 to-white border-none shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Sales</p>
+                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalSales)}</h3>
+                </div>
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-green-50 to-white border-none shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Cash Received</p>
+                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalCash)}</h3>
+                </div>
+                <div className="bg-green-100 p-2 rounded-full">
+                  <IndianRupee className="h-5 w-5 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">UPI Payments</p>
+                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalUpi)}</h3>
+                </div>
+                <div className="bg-purple-100 p-2 rounded-full">
+                  <CreditCard className="h-5 w-5 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-amber-50 to-white border-none shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Liquor Sales</p>
+                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalLiquor)}</h3>
+                </div>
+                <div className="bg-amber-100 p-2 rounded-full">
+                  <Wine className="h-5 w-5 text-amber-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-yellow-50 to-white border-none shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Beer Sales</p>
+                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalBeer)}</h3>
+                </div>
+                <div className="bg-yellow-100 p-2 rounded-full">
+                  <Beer className="h-5 w-5 text-yellow-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Main Table */}
+      <Card className="border-none shadow-md">
+        <CardHeader className="pb-2">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <CardTitle className="text-xl font-bold">Invoice History</CardTitle>
+              <CardDescription>
+                View and manage all your invoice records
+              </CardDescription>
+            </div>
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by date..."
+                className="pl-8 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableCaption className="text-center text-muted-foreground py-4">
+                  A comprehensive list of your recent invoices and financial records.
+                </TableCaption>
+                <TableHeader className="bg-muted/50">
+                  <TableRow>
+                    <TableHead className="font-medium whitespace-nowrap">Date</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Total Sale</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Cash Received</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">UPI Payment</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Discount</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Liquor Sale</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Beer Sale</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Breakage Expense</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Canteen Income</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Rate Difference</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Rent</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">Transportation</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((invoice) => (
+                      <TableRow key={invoice.id} className="hover:bg-muted/50 transition-colors">
+                        <TableCell className="font-medium whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            {formatDate(invoice.date)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
+                            {formatCurrency(invoice.totalSale)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            {formatCurrency(invoice.totalCashReceived)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-purple-500" />
+                            {formatCurrency(invoice.upiPayment)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {invoice.discount ? (
+                            <div className="flex items-center gap-2">
+                              <TrendingDown className="h-4 w-4 text-red-500" />
+                              {formatCurrency(invoice.discount)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">₹ 0</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Wine className="h-4 w-4 text-amber-500" />
+                            {formatCurrency(invoice.totalDesiSale)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Beer className="h-4 w-4 text-yellow-500" />
+                            {formatCurrency(invoice.totalBeerSale)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {invoice.breakageCash ? (
+                            <span className="text-red-600">{formatCurrency(invoice.breakageCash)}</span>
+                          ) : (
+                            <span className="text-muted-foreground">₹ 0</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {invoice.canteenCash ? (
+                            <span className="text-green-600">{formatCurrency(invoice.canteenCash)}</span>
+                          ) : (
+                            <span className="text-muted-foreground">₹ 0</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <span className={invoice.rateDiff > 0 ? "text-green-600" : "text-red-600"}>
+                            {formatCurrency(invoice.rateDiff)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Home className="h-4 w-4 text-muted-foreground" />
+                            {formatCurrency(invoice.rent)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Truck className="h-4 w-4 text-muted-foreground" />
+                            {formatCurrency(invoice.transportation)}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={12} className="h-60 text-center">
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <div className="rounded-full bg-muted p-3 mb-3">
+                            <FileText className="h-10 w-10 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-lg font-medium">No invoice data available</h3>
+                          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+                            {searchTerm 
+                              ? "No results match your search criteria. Try adjusting your search terms."
+                              : "Please select a different shop or check back later when more data is available."}
+                          </p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          {filteredData.length > 0 && (
+            <div className="mt-4 text-sm text-muted-foreground">
+              Showing {filteredData.length} of {data?.length || 0} invoices
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
