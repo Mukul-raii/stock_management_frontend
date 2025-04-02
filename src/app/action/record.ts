@@ -27,6 +27,6 @@ export const getAllRecords=async () => {
         const res = await axios.get('http://localhost:3000/record/get_all_records')
         return res.data
     } catch (error) {
-        return null1
+        return null
     }
 }
