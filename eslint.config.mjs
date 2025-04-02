@@ -11,11 +11,6 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  {
-    eslint: {
-      ignoreDuringBuilds: true, // Ensure this is inside an object at the correct level
-    },
-  },
 ];
 
 export default eslintConfig;
