@@ -1,8 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import { SessionNavBar, Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar"
-import Link from "next/link";
-import Image from "next/image";
+import { SessionNavBar} from "@/components/ui/sidebar";
 
 import "./globals.css";
 
