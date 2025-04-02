@@ -11,9 +11,14 @@ interface FormData {
 export const getStocks = async (shop: string) => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`, {
-        headers:{'Content-Type': 'application/json' }
-        }
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+
+          Accept: "application/json",
+        },
+      }
     );
     console.log("your stock ", response);
 
@@ -31,8 +36,12 @@ export const add_new_stock = async (formdata: FormData) => {
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/add_new_stock`,
       formdata,
       {
-        headers:{'Content-Type': 'application/json' }
-        }
+        headers: {
+          "Content-Type": "application/json",
+
+          Accept: "application/json",
+        },
+      }
     );
 
     return response.data;
@@ -63,8 +72,12 @@ export const addNewBillHistory = async (
       `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/generate_bill_history`,
       { ...dailyExpenses, cashLeft, date, stockData, shopName },
       {
-        headers:{'Content-Type': 'application/json' }
-        }
+        headers: {
+          "Content-Type": "application/json",
+
+          Accept: "application/json",
+        },
+      }
     );
 
     return response.status;
@@ -84,8 +97,12 @@ export const receiveNewStock = async (
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/update_stock`,
       { shopName, newQuantities },
       {
-        headers:{'Content-Type': 'application/json' }
-        }
+        headers: {
+          "Content-Type": "application/json",
+
+          Accept: "application/json",
+        },
+      }
     );
 
     return response.status;
@@ -103,8 +120,11 @@ export const transferStock = async (
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/transfer_stock`,
       { fromshop, newQuantities },
       {
-        headers:{'Content-Type': 'application/json' }
-        }
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
     );
     console.log(response.data);
 
