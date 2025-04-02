@@ -11,7 +11,9 @@ interface FormData {
 export const getStocks = async (shop: string) => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`, {
+        headers:{'Content-Type': 'application/json' }
+        }
     );
     console.log("your stock ", response);
 
@@ -27,7 +29,10 @@ export const add_new_stock = async (formdata: FormData) => {
     console.log(formdata);
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/add_new_stock`,
-      formdata
+      formdata,
+      {
+        headers:{'Content-Type': 'application/json' }
+        }
     );
 
     return response.data;
@@ -56,7 +61,10 @@ export const addNewBillHistory = async (
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/generate_bill_history`,
-      { ...dailyExpenses, cashLeft, date, stockData, shopName }
+      { ...dailyExpenses, cashLeft, date, stockData, shopName },
+      {
+        headers:{'Content-Type': 'application/json' }
+        }
     );
 
     return response.status;
@@ -74,7 +82,10 @@ export const receiveNewStock = async (
   try {
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/update_stock`,
-      { shopName, newQuantities }
+      { shopName, newQuantities },
+      {
+        headers:{'Content-Type': 'application/json' }
+        }
     );
 
     return response.status;
@@ -90,7 +101,10 @@ export const transferStock = async (
   try {
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/transfer_stock`,
-      { fromshop, newQuantities }
+      { fromshop, newQuantities },
+      {
+        headers:{'Content-Type': 'application/json' }
+        }
     );
     console.log(response.data);
 
