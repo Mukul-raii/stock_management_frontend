@@ -92,6 +92,7 @@ export const receiveNewStock = async (
       { shopName, newQuantities },
       {
         headers: {
+          "Content-Type": "application/json",
           Accept: "application/json",
         },
       }
