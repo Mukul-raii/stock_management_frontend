@@ -36,6 +36,8 @@ export default function AddNewStock() {
     console.log(res);
     if (res === 200) {
       toast.success("Stock added successfully");
+    }else{
+      toast.success("Error adding stock")
     }
   };
 

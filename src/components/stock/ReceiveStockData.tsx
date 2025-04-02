@@ -26,6 +26,7 @@ import { Button } from "../ui/button";
 import { AlertCircle, CheckCircle2, PackagePlus, Truck } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner";
 interface ShopProps {
   shopName: string;
   stockData: any;
@@ -46,12 +47,11 @@ export default function ReceiveStockData({ shopName, stockData ,refresh}: ShopPr
     try {
       const res = await receiveNewStock(shopName, newQuantities)
       setIsSuccess(true)
-    
-      // Reset form after successful submission
+    toast.success("Stock received successfully")
       refresh(true)
       setNewQuantities({})
     } catch (error) {
-  
+  toast.error("Error receiving stock")
     } finally {
       setIsSubmitting(false)
       setIsDialogOpen(false)

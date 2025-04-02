@@ -12,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { addNewRecord } from "@/app/action/record"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
 
 const TypeRecordProps: string[] = [
   "Purchase Stock",
@@ -57,9 +58,10 @@ export default function AddNewRecord() {
       setDate(new Date())
       setSelectedPaymentMethod("")
       
+      toast.success("Record added successfully!")
     
     } catch (error) {
-     
+     toast.error("Error adding record")
       console.error(error)
     } finally {
       setIsSubmitting(false)

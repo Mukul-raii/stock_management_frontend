@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Check, Copy, UserRoundPlus } from "lucide-react";
 import {Label} from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface StockAddProps{
     shopName:string
@@ -176,10 +177,11 @@ export default function StockAdd({ shopName }: StockAddProps) {
   const handleSubmit =async ()=>{
     const res = await addNewBillHistory(dailyExpenses,cashLeft,date,stockData,shopName)
       if(res===200){
+        toast.success("Bill history added successfully")
       setIsConfirmDialogOpen(false)
       setIsMainDialogOpen(false); // Close the main dialog too
     }else{
-      <div>Error in bill history</div>
+      toast.error("Error in bill history")
     }
   }
 

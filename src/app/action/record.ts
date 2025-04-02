@@ -26,7 +26,7 @@ export const addNewRecord = async (
       }
     );
 
-    return res.data;
+    return res.status;
   } catch (error) {
     console.log(error);
 
@@ -65,7 +65,6 @@ export const bankTransaction = async (
         },
       }
     );
-    console.log(res);
 
     if (res.status === 200) return true;
   } catch (error) {

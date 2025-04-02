@@ -15,6 +15,7 @@ import { bankTransaction } from "@/app/action/record";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 const bankAccounts = ["Current Bank", "Saving Bank (Nana)", "Saving Bank (Pooja)"];
 
@@ -37,6 +38,7 @@ export default function BankTransaction() {
       const res = await bankTransaction(parseInt(amount), transactionType, selectedAccount);
       
       if (res) {
+        toast.success("Transaction completed successfully!")
         setFeedback({
           status: "success",
           message: "Transaction completed successfully!"
@@ -46,6 +48,7 @@ export default function BankTransaction() {
         setTransactionType("");
         setSelectedAccount("");
       } else {
+        toast.error("Transaction failed. Please try again.")
         setFeedback({
           status: "error",
           message: "Transaction failed. Please try again."
