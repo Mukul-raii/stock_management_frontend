@@ -51,6 +51,17 @@ interface DashboardData {
   };
 }
 
+          
+interface LocationData {
+  totalSale: number;
+  totalCashReceived: number;
+  totalUpiPayment: number;
+  totalBreakageCash: number;
+  totalTransportation: number;
+  totalRent: number;
+}
+
+
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -62,6 +73,8 @@ const formatCurrency = (value: number): string => {
 export default function Home() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
+  const [upiPayment ,setUpiPayment ]= useState<number>(0)
+
 
   useEffect(() => {
     async function fetchData() {
@@ -69,6 +82,15 @@ export default function Home() {
         const res = await getDashboardData()
         console.log(res);
         setDashboardData(res)
+
+        if (res && res.TotalCash) {
+          const totalUpi = Object.values(res.TotalCash).reduce(
+            (sum:number, location) => sum + ((location as LocationData).totalUpiPayment || 0),
+            0
+          );
+          setUpiPayment(totalUpi);
+        }
+
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
       } finally {
@@ -201,7 +223,7 @@ export default function Home() {
             </Card>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.entries(dashboardData?.TotalCash || {}).map(([location, data]) => (
+              {Object.entries(dashboardData?.TotalCash || {}).map(([location, data]) =>(
                 <Card key={location} className="shadow-md">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">{location} Details</CardTitle>
@@ -323,7 +345,8 @@ export default function Home() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Current Balance:</span>
                         <span className={`font-bold ${bank.balance >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                          {formatCurrency(bank.balance)}
+                          {bank.name==="Current Bank" ? `${formatCurrency(bank.balance +upiPayment)}` :`${formatCurrency(bank.balance)}` }
+                          
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -332,7 +355,10 @@ export default function Home() {
                             <ArrowUpRight className="h-4 w-4 mr-1" />
                             <span className="text-xs font-medium">Credits</span>
                           </div>
-                          <div className="text-lg font-bold text-emerald-700">{formatCurrency(bank.credit)}</div>
+                          <div className="text-lg font-bold text-emerald-700">
+                          {bank.name==="Current Bank" ? `${formatCurrency(bank.credit +upiPayment)}` :`${formatCurrency(bank.credit)}` }
+                            
+                            </div>
                         </div>
                         <div className="bg-rose-50 p-3 rounded-lg">
                           <div className="flex items-center text-rose-600 mb-1">
