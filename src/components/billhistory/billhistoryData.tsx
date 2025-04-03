@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import {format} from 'date-fns-tz'
 import { BillType } from "@/app/billhistory/page"
 import {
   Table,
@@ -53,9 +54,8 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
   ? data.filter(item => {
       const dateObj = new Date(item.pdfDate);
       return !isNaN(dateObj.getTime()) && 
-      formatDate(dateObj).toLowerCase().includes(searchTerm.toLowerCase());
-    })
-  : [];
+        format(dateObj,"yyyy-MM-dd HH:mm:ss zzz",{ timeZone: 'Asia/Kolkata' }).includes(searchTerm)
+    }): [];
 
   return (
     <div className="space-y-6">
