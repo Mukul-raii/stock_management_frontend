@@ -158,9 +158,30 @@ export default function StockAdd({ shopName }: StockAddProps) {
     fetchdata()
   },[shopName])
 
+  
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    if (!selectedDate) return;
+    
+    // Get current time components
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    
+    // Create new date with selected date but current time
+    const dateWithCurrentTime = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      hours,
+      minutes,
+      seconds
+    );
+    
+    setDate(dateWithCurrentTime);
+  };
 
   
-
 
   const handleDailyExpenses= (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -179,7 +200,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
       if(res===200){
         toast.success("Bill history added successfully")
       setIsConfirmDialogOpen(false)
-      setIsMainDialogOpen(false); // Close the main dialog too
+      setIsMainDialogOpen(false)
     }else{
       toast.error("Error in bill history")
     }
@@ -212,7 +233,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2" align="start">
-              <Calendar required mode="single" selected={date} onSelect={setDate} />
+              <Calendar required mode="single" selected={date} onSelect={handleDateSelect} />
             </PopoverContent>
           </Popover>
         </div>
