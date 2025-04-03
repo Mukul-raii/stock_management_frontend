@@ -51,9 +51,9 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
   // Filter data based on search term
   const filteredData = data && data.length > 0
   ? data.filter(item => {
-      const dateObj = new Date(item.date);
+      const dateObj = new Date(item.pdfDate);
       return !isNaN(dateObj.getTime()) && 
-             formatDate(dateObj.toLocaleDateString()).toLowerCase().includes(searchTerm.toLowerCase());
+      formatDate(dateObj).toLowerCase().includes(searchTerm.toLowerCase());
     })
   : [];
 
