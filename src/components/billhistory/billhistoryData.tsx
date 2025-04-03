@@ -40,16 +40,12 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
   }
 
   // Format date for display
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Invalid date'
-    const dateObj = new Date(dateString)
-    return isNaN(dateObj.getTime())
-      ? 'Invalid date'
-      : dateObj.toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        })
+  const formatDate = (dateString: Date) => {
+    return new Date(dateString).toLocaleDateString("en-US", { 
+      year: "numeric", 
+      month: "long", 
+      day: "2-digit" 
+    });
   }
 
   // Filter data based on search term
@@ -189,7 +185,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                         <TableCell className="font-medium whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                            {invoice.date ? formatDate(new Date(invoice.date).toLocaleDateString()) : "Invalid Date"}
+                            {invoice.date ? formatDate((invoice.pdfDate)) : "Invalid Date"}
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
