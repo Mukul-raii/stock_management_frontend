@@ -358,8 +358,7 @@ export default function Home() {
                             <span className="text-xs font-medium">Credits</span>
                           </div>
                           <div className="text-lg font-bold text-emerald-700">
-                          {bank.name==="Current Bank" ? `${formatCurrency(bank.credit +upiPayment)}` :`${formatCurrency(bank.credit)}` }
-                            
+                          {formatCurrency(dashboardData.MoneyCalculation.TotalBank)}
                             </div>
                         </div>
                         <div className="bg-rose-50 p-3 rounded-lg">
