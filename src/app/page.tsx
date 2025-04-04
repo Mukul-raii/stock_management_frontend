@@ -49,6 +49,10 @@ interface DashboardData {
   BankTransactions: {
     [bank: string]: BankTransactionData;
   };
+  MoneyCalculation: {
+    TotalCash: number;
+    TotalBank: number;
+  };
 }
 
           
@@ -109,7 +113,6 @@ export default function Home() {
     )
   }
 
-  // If no data is available after loading
   if (!dashboardData) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
@@ -118,7 +121,6 @@ export default function Home() {
     )
   }
 
-  // Prepare data for charts - with safety checks
   const locationData = Object.entries(dashboardData?.TotalCash || {}).map(([location, data]) => ({
     name: location,
     totalSale: data.totalSale || 0,
@@ -173,7 +175,7 @@ export default function Home() {
               <Wallet className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(totalCashReceived)}</div>
+              <div className="text-2xl font-bold">{formatCurrency(dashboardData.MoneyCalculation.TotalCash)}</div>
               <p className="text-xs text-gray-500 mt-1">
                 {totalSales > 0 ? ((totalCashReceived / totalSales) * 100).toFixed(1) : "0"}% of total sales
               </p>
@@ -187,7 +189,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatCurrency(bankTransactionData.reduce((sum, bank) => sum + bank.balance, 0))}
+                {dashboardData.MoneyCalculation.TotalBank}
               </div>
               <p className="text-xs text-gray-500 mt-1">Across all bank accounts</p>
             </CardContent>
