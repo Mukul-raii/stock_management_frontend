@@ -152,7 +152,7 @@ export default function Home() {
   const COLORS = ["#10b981", "#3b82f6", "#f97316", "#8b5cf6", "#ec4899"]
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-18">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Financial Dashboard</h1>
         <p className="text-gray-600 mb-8">Overview of your financial data and transactions</p>
