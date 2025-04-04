@@ -347,7 +347,8 @@ export default function Home() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Current Balance:</span>
                         <span className={`font-bold ${bank.balance >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                          {bank.name==="Current Bank" ? `${formatCurrency(bank.balance +upiPayment)}` :`${formatCurrency(bank.balance)}` }
+                          {bank.name==="Current Bank" ? `${formatCurrency(dashboardData.MoneyCalculation.TotalBank)}` :`${formatCurrency(bank.credit)}` }
+
                           
                         </span>
                       </div>
@@ -358,7 +359,7 @@ export default function Home() {
                             <span className="text-xs font-medium">Credits</span>
                           </div>
                           <div className="text-lg font-bold text-emerald-700">
-                          {bank.name==="Current Bank" ? `${formatCurrency(dashboardData.MoneyCalculation.TotalBank)}` :`${formatCurrency(bank.credit)}` }
+                          {bank.name==="Current Bank" ? `${formatCurrency(bank.balance +upiPayment)}` :`${formatCurrency(bank.balance)}` }
                             </div>
                         </div>
                         <div className="bg-rose-50 p-3 rounded-lg">
