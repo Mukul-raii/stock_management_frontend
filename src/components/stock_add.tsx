@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, startOfMonth, startOfYesterday } from "date-fns";
 import { CalendarIcon, Package } from "lucide-react";
 import { useId } from "react";
 
@@ -72,7 +72,7 @@ export interface DailyExpenseType{
 
 export default function StockAdd({ shopName }: StockAddProps) {
   const id = useId();
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(new Date(startOfYesterday()));
   const [cashLeft, setCashLeft] = useState(0);
   const [stockData, setStockData] = useState<
   {

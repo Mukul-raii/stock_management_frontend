@@ -22,6 +22,7 @@ import { ArrowRightLeft, SendHorizontal, Package, Check, Loader2 } from "lucide-
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner";
 
 export default function TransferStocks() {
   const [fromshop, setFromShop] = useState("Amariya");
@@ -51,6 +52,10 @@ export default function TransferStocks() {
   async function handleTransfer (){
     try {
       const response = await transferStock(fromshop, newQuantities);
+      console.log("response ",response);
+      
+      setIsSuccess(true)
+      toast.success("Bill history added successfully")
       console.log(response);
     } catch (error) {
       console.error("Error in addNewBillHistory:", error);
