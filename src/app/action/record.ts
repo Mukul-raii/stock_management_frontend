@@ -46,19 +46,36 @@ export const getAllRecords = async () => {
     );
     return res.data;
   } catch (error) {
+    console.log(error);
+
     return null;
   }
 };
 
+export const getAllBankTransaction = async ()=>{
+try {
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API}/record/get_all_banks_statement`)
+  console.log(res);
+  
+  return res.data
+} catch (error) {
+  console.log(error);
+
+  return null
+}
+}
+
 export const bankTransaction = async (
   amount: number,
   transactionType: string,
-  selectedAccount: string
+  selectedAccount: string,
+  paymentMethod:string,
+  message:string
 ) => {
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/bank_transaction`,
-      { amount, transactionType, selectedAccount },
+      { amount, transactionType, selectedAccount,paymentMethod,message },
       {
         headers: {
           Accept: "application/json",
