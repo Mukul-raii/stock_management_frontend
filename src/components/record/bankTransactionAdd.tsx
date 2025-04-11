@@ -107,7 +107,7 @@ export default function AddBankTransaction() {
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="Enter amount"
-                      className="pl-8 focus-visible:ring-2 focus-visible:ring-emerald-500 border-gray-300"
+                      className="pl-8 focus-visible:ring-2 focus-visible:ring-gray-500 border-gray-300"
                       required
                     />
                   </div>
@@ -122,7 +122,7 @@ export default function AddBankTransaction() {
                     onValueChange={setTransactionType}
                     required
                   >
-                    <SelectTrigger className="w-full border-gray-300 focus:ring-emerald-500">
+                    <SelectTrigger className="w-full border-gray-300 focus:ring-gray-500">
                       <SelectValue placeholder="Select transaction type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -198,7 +198,7 @@ export default function AddBankTransaction() {
                       ? "bg-emerald-600 hover:bg-emerald-700" 
                       : transactionType === "debit"
                       ? "bg-rose-600 hover:bg-rose-700"
-                      : "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-gray-700 hover:bg-gray-500"
                   } text-white py-2 px-4 rounded-md transition-colors duration-200`}
                   disabled={isSubmitting}
                 >
