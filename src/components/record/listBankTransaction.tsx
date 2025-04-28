@@ -6,8 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Search, DollarSign, Calendar, Store, FileText, CreditCard, Landmark } from "lucide-react"
-
+import { Search, DollarSign, Calendar, Store, FileText, CreditCard, Landmark, Calendar1Icon } from "lucide-react"
+import {format, formatDate} from 'date-fns'
 
 
 
@@ -19,6 +19,7 @@ interface RecordType {
   transaction: "credit" | "debit"
   paymentMethod: string | null
   message: string | null
+  date:Date | null
 }
 
 
@@ -50,9 +51,13 @@ const [error, setError] = useState("")
         item.bank.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.transaction.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.message?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.paymentMethod?.toLowerCase().includes(searchTerm.toLowerCase())
+        item.paymentMethod?.toLowerCase().includes(searchTerm.toLowerCase())||
+        item.date
     )
   
+    const formatDate=(dateStr:string | undefined)=>
+      dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day: "2-digit", month: "short", year: "numeric" }) : "N/A"
+
 
     const formatCurrency = (amount: number) =>
       new Intl.NumberFormat("en-IN", {
@@ -108,6 +113,7 @@ const [error, setError] = useState("")
                     <TableHead>Amount</TableHead>
                     <TableHead>Message</TableHead>
                     <TableHead>Payment Method</TableHead>
+                    <TableHead>Date</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -136,6 +142,12 @@ const [error, setError] = useState("")
                         <div className="flex items-center gap-2">
                           <CreditCard className="h-4 w-4 text-muted-foreground" />
                           <Badge variant="outline">{item.paymentMethod || "N/A"}</Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar1Icon className="h-4 w-4 text-muted-foreground" />
+                          <p >{formatDate(item.date) || "N/a"}</p>
                         </div>
                       </TableCell>
                     </TableRow>

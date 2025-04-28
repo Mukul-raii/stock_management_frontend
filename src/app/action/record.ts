@@ -70,12 +70,13 @@ export const bankTransaction = async (
   transactionType: string,
   selectedAccount: string,
   paymentMethod:string,
-  message:string
+  message:string,
+  structuredDate:Date
 ) => {
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/bank_transaction`,
-      { amount, transactionType, selectedAccount,paymentMethod,message },
+      { amount, transactionType, selectedAccount,paymentMethod,message,structuredDate },
       {
         headers: {
           Accept: "application/json",
