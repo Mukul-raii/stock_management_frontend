@@ -61,6 +61,7 @@ interface DashboardData {
     TotalBank: number;
   };
   companyRecords: object;
+  stockTotalCost: object;
 }
 
 interface LocationData {
@@ -86,7 +87,9 @@ export default function Home() {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [upiPayment, setUpiPayment] = useState<number>(0);
-  const [expandedRecords, setExpandedRecords] = useState<Record<string, boolean>>({});
+  const [expandedRecords, setExpandedRecords] = useState<
+    Record<string, boolean>
+  >({});
   useEffect(() => {
     async function fetchData() {
       try {
@@ -112,9 +115,9 @@ export default function Home() {
   }, []);
 
   const toggleRecordExpand = (recordName: string) => {
-    setExpandedRecords(prev => ({
+    setExpandedRecords((prev) => ({
       ...prev,
-      [recordName]: !prev[recordName]
+      [recordName]: !prev[recordName],
     }));
   };
   // If data is still loading or not available, show loading state
@@ -141,6 +144,25 @@ export default function Home() {
       totalCashReceived: data.totalCashReceived || 0,
     })
   );
+
+  const stockData = Object.entries(dashboardData?.stockTotalCost || {}).map(
+    ([location, data]) => ({
+      shop: location,
+      shopName: data.shop,
+      totalPrice: data.TotalPrice || 0,
+    })
+  );
+  const groupedByShop: { [shopName: string]: number } = {};
+
+  stockData.forEach((item) => {
+    if (groupedByShop[item.shopName]) {
+      groupedByShop[item.shopName] += item.totalPrice;
+    } else {
+      groupedByShop[item.shopName] = item.totalPrice;
+    }
+  });
+
+  console.log(groupedByShop);
 
   const recordData = Object.entries(dashboardData?.Record || {})
     .map(([category, data]) => ({
@@ -286,69 +308,161 @@ export default function Home() {
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.entries(dashboardData?.TotalCash || {}).map(
-                ([location, data]) => (
-                  <Card key={location} className="shadow-md">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">
-                        {location} Details
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
+                {Object.entries(groupedByShop).map(([shopName]) => (
+                  <div key={shopName}>
+                    <h2 className="text-xl font-bold mb-4">{shopName}</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {Object.entries(dashboardData?.TotalCash || {})
+                        .filter(([location]) => location === shopName)
+                        .map(([location, data]) => (
+                          <Card key={location} className="shadow-md">
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-lg">
+                                {location} Details
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-600">
+                                    Total Stock:
+                                  </span>
+                                  <span className="font-medium">
+                                    {formatCurrency(groupedByShop[location])}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-600">
+                                    Total Sales:
+                                  </span>
+                                  <span className="font-medium">
+                                    {formatCurrency(data.totalSale)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-600">
+                                    Cash Received:
+                                  </span>
+                                  <span className="font-medium">
+                                    {formatCurrency(data.totalCashReceived)}
+                                  </span>
+                                </div>
+                                {data.totalUpiPayment > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">
+                                      UPI Payments:
+                                    </span>
+                                    <span className="font-medium">
+                                      {formatCurrency(data.totalUpiPayment)}
+                                    </span>
+                                  </div>
+                                )}
+                                {data.totalBreakageCash > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">
+                                      Breakage Cash:
+                                    </span>
+                                    <span className="font-medium">
+                                      {formatCurrency(data.totalBreakageCash)}
+                                    </span>
+                                  </div>
+                                )}
+                                {data.totalTransportation > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">
+                                      Transportation:
+                                    </span>
+                                    <span className="font-medium">
+                                      {formatCurrency(data.totalTransportation)}
+                                    </span>
+                                  </div>
+                                )}
+                                {data.totalRent > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">Rent:</span>
+                                    <span className="font-medium">
+                                      {formatCurrency(data.totalRent)}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+
+              {/* {Object.entries(dashboardData?.TotalCash || {}).map(
+                  ([location, data]) => (
+                    <Card key={location} className="shadow-md">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">
+                          {location} Details
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Total Sales:</span>
-                          <span className="font-medium">
-                            {formatCurrency(data.totalSale)}
-                          </span>
+                            <span className="text-gray-600">Total Stock:</span>
+                            <span className="font-medium">
+                            {formatCurrency(groupedByShop[location].)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Total Sales:</span>
+                            <span className="font-medium">
+                              {formatCurrency(data.totalSale)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Cash Received:</span>
+                            <span className="font-medium">
+                              {formatCurrency(data.totalCashReceived)}
+                            </span>
+                          </div>
+                          {data.totalUpiPayment > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">UPI Payments:</span>
+                              <span className="font-medium">
+                                {formatCurrency(data.totalUpiPayment)}
+                              </span>
+                            </div>
+                          )}
+                          {data.totalBreakageCash > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">
+                                Breakage Cash:
+                              </span>
+                              <span className="font-medium">
+                                {formatCurrency(data.totalBreakageCash)}
+                              </span>
+                            </div>
+                          )}
+                          {data.totalTransportation > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">
+                                Transportation:
+                              </span>
+                              <span className="font-medium">
+                                {formatCurrency(data.totalTransportation)}
+                              </span>
+                            </div>
+                          )}
+                          {data.totalRent > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Rent:</span>
+                              <span className="font-medium">
+                                {formatCurrency(data.totalRent)}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Cash Received:</span>
-                          <span className="font-medium">
-                            {formatCurrency(data.totalCashReceived)}
-                          </span>
-                        </div>
-                        {data.totalUpiPayment > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">UPI Payments:</span>
-                            <span className="font-medium">
-                              {formatCurrency(data.totalUpiPayment)}
-                            </span>
-                          </div>
-                        )}
-                        {data.totalBreakageCash > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">
-                              Breakage Cash:
-                            </span>
-                            <span className="font-medium">
-                              {formatCurrency(data.totalBreakageCash)}
-                            </span>
-                          </div>
-                        )}
-                        {data.totalTransportation > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">
-                              Transportation:
-                            </span>
-                            <span className="font-medium">
-                              {formatCurrency(data.totalTransportation)}
-                            </span>
-                          </div>
-                        )}
-                        {data.totalRent > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Rent:</span>
-                            <span className="font-medium">
-                              {formatCurrency(data.totalRent)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              )}
+                      </CardContent>
+                    </Card>
+                  )
+                )} */}
             </div>
           </TabsContent>
 

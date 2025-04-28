@@ -147,7 +147,7 @@ const [error, setError] = useState("")
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Calendar1Icon className="h-4 w-4 text-muted-foreground" />
-                          <p >{formatDate(item.date) || "N/a"}</p>
+                          <p>{item?.date ? formatDate(item?.date) : "N/A"}</p>
                         </div>
                       </TableCell>
                     </TableRow>
