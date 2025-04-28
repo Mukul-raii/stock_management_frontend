@@ -257,7 +257,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {dashboardData.MoneyCalculation.TotalBank}
+                {formatCurrency(dashboardData.MoneyCalculation.TotalBank)}
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 Across all bank accounts
