@@ -71,7 +71,7 @@ export const bankTransaction = async (
   selectedAccount: string,
   paymentMethod:string,
   message:string,
-  structuredDate:Date
+  structuredDate:Date | undefined
 ) => {
   try {
     const res = await axios.post(
