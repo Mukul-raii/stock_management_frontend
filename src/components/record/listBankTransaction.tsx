@@ -55,7 +55,7 @@ const [error, setError] = useState("")
         item.date
     )
   
-    const formatDate=(dateStr:string | undefined)=>
+    const formatDate=(dateStr:Date | undefined)=>
       dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day: "2-digit", month: "short", year: "numeric" }) : "N/A"
 
 
