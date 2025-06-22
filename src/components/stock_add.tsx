@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, startOfMonth, startOfYesterday } from "date-fns";
-import { CalendarIcon, Package } from "lucide-react";
+import { format, startOfYesterday } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { useId } from "react";
 
 import { AlertCircle } from "lucide-react";
@@ -34,15 +34,9 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Check, Copy, UserRoundPlus } from "lucide-react";
-import {Label} from "@/components/ui/label";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import AddNewRecord from "@/components/record/AddNewRecord";
 
 interface StockAddProps{
     shopName:string
@@ -70,6 +64,16 @@ export interface DailyExpenseType{
   totalLiquorSale:number 
 }
 
+export interface RecordType {
+  id?: number;
+  recordType: string;
+  shop: string;
+  message: string;
+  amount: number;
+  date: Date;
+  paymentMethod: string;
+}
+
 export default function StockAdd({ shopName }: StockAddProps) {
   const id = useId();
   const [date, setDate] = useState<Date>(new Date(startOfYesterday()));
@@ -89,6 +93,8 @@ export default function StockAdd({ shopName }: StockAddProps) {
   const [newQuantities, setNewQuantities] = useState<{[key:number]: number}>({});
   const [ isConfirmDialogOpen ,setIsConfirmDialogOpen] = useState(false)
   const [isMainDialogOpen, setIsMainDialogOpen] = useState(false);
+  const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
+  const [addedRecords, setAddedRecords] = useState<RecordType[]>([]);
 
  const [dailyExpenses,setDailyExpenses]=useState({
     discount : 0,
@@ -135,13 +141,17 @@ export default function StockAdd({ shopName }: StockAddProps) {
   },[newQuantities,stockData])
   
   useEffect(() => {
+    // Calculate cash from added records (only cash payments)
+    const cashRecordsDeduction = addedRecords
+      .filter(record => record.paymentMethod === "Cash")
+      .reduce((total, record) => total + record.amount, 0);
     
     setCashLeft(
       dailyExpenses.totalCash - dailyExpenses.breakageCash - dailyExpenses.discount +
       dailyExpenses.canteenCash + dailyExpenses.ratedifference - 
-      dailyExpenses.transportation - dailyExpenses.upiPayment -dailyExpenses.rent
+      dailyExpenses.transportation - dailyExpenses.upiPayment - dailyExpenses.rent - cashRecordsDeduction
     );
-  }, [dailyExpenses]);
+  }, [dailyExpenses, addedRecords]);
 
   useEffect(() => {
     async function  fetchdata  ()  {
@@ -196,14 +206,27 @@ export default function StockAdd({ shopName }: StockAddProps) {
 
 
   const handleSubmit =async ()=>{
-    const res = await addNewBillHistory(dailyExpenses,cashLeft,date,stockData,shopName)
+    const res = await addNewBillHistory(dailyExpenses,cashLeft,date,stockData,shopName,addedRecords)
       if(res===200){
         toast.success("Bill history added successfully")
       setIsConfirmDialogOpen(false)
       setIsMainDialogOpen(false)
+      // Reset added records after successful submission
+      setAddedRecords([])
     }else{
       toast.error("Error in bill history")
     }
+  }
+
+  const handleRecordAdded = (newRecord: RecordType) => {
+    // Add the new record to the state
+    setAddedRecords(prev => [...prev, newRecord]);
+    
+    // Close the add record dialog
+    setIsAddRecordDialogOpen(false);
+    
+    // Show success message
+    toast.success("Record added successfully! It will be reflected in your next report.");
   }
 
   return (
@@ -335,6 +358,45 @@ export default function StockAdd({ shopName }: StockAddProps) {
                   </CardContent>
                 </Card>
 
+                {/* Added Records Summary */}
+                {addedRecords.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Added Records</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {addedRecords.map((record, index) => (
+                        <div key={index} className="flex justify-between items-center py-1 border-b last:border-b-0">
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{record.recordType}</div>
+                            <div className="text-xs text-muted-foreground">{record.message}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {record.paymentMethod} • {format(record.date, "MMM dd")}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-red-600">-₹{record.amount}</div>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex justify-between pt-2 border-t font-medium">
+                        <span>Total Records Impact:</span>
+                        <span className="text-red-600">
+                          -₹{addedRecords.reduce((total, record) => total + record.amount, 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>Cash Records Impact:</span>
+                        <span className="text-red-600">
+                          -₹{addedRecords
+                            .filter(record => record.paymentMethod === "Cash")
+                            .reduce((total, record) => total + record.amount, 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {cashLeft < 0 && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
@@ -346,8 +408,30 @@ export default function StockAdd({ shopName }: StockAddProps) {
 
               <div className="space-y-4">
                 <Card>
-                  <CardHeader className="pb-2">
+                  <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-lg">Daily Expenses</CardTitle>
+                    <Dialog open={isAddRecordDialogOpen} onOpenChange={setIsAddRecordDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="ml-auto">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Record
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Add Record</DialogTitle>
+                          <DialogDescription>
+                            Add a new financial record that will be reflected in your sales summary.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <AddNewRecord onRecordAdded={handleRecordAdded} />
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsAddRecordDialogOpen(false)}>
+                            Close
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">

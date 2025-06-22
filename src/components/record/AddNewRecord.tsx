@@ -1,18 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { CalendarIcon, CreditCard, MessageSquare, Store, FileText, DollarSign, CheckCircle2 } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { addNewRecord } from "@/app/action/record"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "sonner"
+import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  CalendarIcon,
+  CreditCard,
+  MessageSquare,
+  Store,
+  FileText,
+  DollarSign,
+  CheckCircle2,
+} from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { addNewRecord } from "@/app/action/record";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
 const TypeRecordProps: string[] = [
   "Purchase Stock",
@@ -22,24 +47,54 @@ const TypeRecordProps: string[] = [
   "Assesment Payment",
   "Salary",
   "Cash Handling Charge",
-  "Others"
-]
+  "Others",
+];
 
-const shopName = ["Amariya", "Vamanpuri"]
+const shopName = ["Amariya", "Vamanpuri"];
 
-export default function AddNewRecord() {
-  const [date, setDate] = useState<Date>(new Date())
-  const [recordType, setRecordType] = useState("")
-  const [selectedShop, setSelectedShop] = useState("")
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("")
-  const [message, setMessage] = useState("")
-  const [amount, setAmount] = useState<number | string>(0)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+interface AddNewRecordProps {
+  onRecordAdded?: (record: {
+    recordType: string;
+    shop: string;
+    message: string;
+    amount: number;
+    date: Date;
+    paymentMethod: string;
+  }) => void;
+}
+
+export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
+  const [date, setDate] = useState<Date>(new Date());
+  const [recordType, setRecordType] = useState("");
+  const [selectedShop, setSelectedShop] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [message, setMessage] = useState("");
+  const [amount, setAmount] = useState<number | string>(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Validate required fields
+    if (!recordType || !selectedShop || !selectedPaymentMethod || !amount) {
+      toast.error("Please fill in all required fields");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Capture record data before any async operations
+    const recordData = {
+      recordType,
+      shop: selectedShop,
+      message,
+      amount: Number(amount),
+      date,
+      paymentMethod: selectedPaymentMethod,
+    };
+
+    console.log("Captured record data:", recordData);
+
     try {
       await addNewRecord(
         recordType,
@@ -48,25 +103,29 @@ export default function AddNewRecord() {
         Number(amount),
         date,
         selectedPaymentMethod
-      )
-      
-      // Reset form
-      setRecordType("")
-      setSelectedShop("")
-      setMessage("")
-      setAmount(0)
-      setDate(new Date())
-      setSelectedPaymentMethod("")
-      
-      toast.success("Record added successfully!")
-    
+      );
+
+      // Reset form only after successful submission
+      setRecordType("");
+      setSelectedShop("");
+      setMessage("");
+      setAmount(0);
+      setDate(new Date());
+      setSelectedPaymentMethod("");
+
+      toast.success("Record added successfully!");
+
+      // Call the callback with the captured data
+      if (onRecordAdded) {
+        onRecordAdded(recordData);
+      }
     } catch (error) {
-     toast.error("Error adding record")
-      console.error(error)
+      toast.error("Error adding record");
+      console.error(error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="w-full">
@@ -87,11 +146,15 @@ export default function AddNewRecord() {
                 <Label htmlFor="recordType" className="text-sm font-medium">
                   Record Type
                 </Label>
-                <Select value={recordType} onValueChange={setRecordType} required>
+                <Select
+                  value={recordType}
+                  onValueChange={setRecordType}
+                  required
+                >
                   <SelectTrigger id="recordType" className="w-full">
                     <SelectValue placeholder="Select Record Type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[9999]">
                     {TypeRecordProps.map((item, index) => (
                       <SelectItem key={index} value={item}>
                         <div className="flex items-center">
@@ -108,11 +171,15 @@ export default function AddNewRecord() {
                 <Label htmlFor="shopName" className="text-sm font-medium">
                   Shop
                 </Label>
-                <Select value={selectedShop} onValueChange={setSelectedShop} required>
+                <Select
+                  value={selectedShop}
+                  onValueChange={setSelectedShop}
+                  required
+                >
                   <SelectTrigger id="shopName" className="w-full">
                     <SelectValue placeholder="Select Shop" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[9999]">
                     {shopName.map((item, index) => (
                       <SelectItem key={index} value={item}>
                         <div className="flex items-center">
@@ -176,7 +243,7 @@ export default function AddNewRecord() {
                       {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 z-[9999]" align="start">
                     <Calendar
                       mode="single"
                       selected={date}
@@ -192,11 +259,15 @@ export default function AddNewRecord() {
                 <Label htmlFor="paymentMethod" className="text-sm font-medium">
                   Payment Method
                 </Label>
-                <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} required>
+                <Select
+                  value={selectedPaymentMethod}
+                  onValueChange={setSelectedPaymentMethod}
+                  required
+                >
                   <SelectTrigger id="paymentMethod" className="w-full">
                     <SelectValue placeholder="Select Payment Method" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[9999]">
                     <SelectItem value="Cash">
                       <div className="flex items-center">
                         <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -222,17 +293,33 @@ export default function AddNewRecord() {
           </form>
         </CardContent>
         <CardFooter className="flex justify-end pt-4">
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="w-full md:w-auto"
           >
             {isSubmitting ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Processing...
               </>
@@ -246,5 +333,5 @@ export default function AddNewRecord() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

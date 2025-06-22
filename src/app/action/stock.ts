@@ -1,4 +1,4 @@
-import { DailyExpenseType } from "@/components/stock_add";
+import { DailyExpenseType, RecordType } from "@/components/stock_add";
 import axios from "axios";
 
 interface FormData {
@@ -49,7 +49,7 @@ export const add_new_stock = async (formdata: FormData) => {
 };
 
 export const addNewBillHistory = async (
-  dailyExpenses: any,
+  dailyExpenses: DailyExpenseType,
   cashLeft: number,
   date: Date,
   stockData: {
@@ -61,12 +61,13 @@ export const addNewBillHistory = async (
     shop: string;
     lastQuantity: number;
   }[], // Ensure it's expecting an array
-  shopName: string
+  shopName: string,
+  records?: RecordType[] // Add records parameter with proper type
 ) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/generate_bill_history`,
-      { ...dailyExpenses, cashLeft, date, stockData, shopName },
+      { ...dailyExpenses, cashLeft, date, stockData, shopName, records },
       {
         headers: {
           Accept: "application/json",
@@ -122,6 +123,6 @@ export const transferStock = async (
 
     return response.data;
   } catch (error) {
-    console.error("error while transfering ");
+    console.error("error while transfering ", error);
   }
 };
