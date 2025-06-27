@@ -77,7 +77,7 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
     setIsSubmitting(true);
 
     // Validate required fields
-    if (!recordType || !selectedShop || !selectedPaymentMethod || !amount) {
+    if (!recordType || !selectedPaymentMethod || !amount) {
       toast.error("Please fill in all required fields");
       setIsSubmitting(false);
       return;
@@ -98,7 +98,7 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
     try {
       await addNewRecord(
         recordType,
-        selectedShop || "  ",
+        selectedShop || "",
         message,
         Number(amount),
         date,
@@ -169,13 +169,9 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="shopName" className="text-sm font-medium">
-                  Shop
+                  Shop <span className="text-muted-foreground">(optional)</span>
                 </Label>
-                <Select
-                  value={selectedShop}
-                  onValueChange={setSelectedShop}
-                  required
-                >
+                <Select value={selectedShop} onValueChange={setSelectedShop}>
                   <SelectTrigger id="shopName" className="w-full">
                     <SelectValue placeholder="Select Shop" />
                   </SelectTrigger>
