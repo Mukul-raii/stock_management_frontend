@@ -95,7 +95,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
   const [isMainDialogOpen, setIsMainDialogOpen] = useState(false);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
   const [addedRecords, setAddedRecords] = useState<RecordType[]>([]);
-
+const [recordDeduction, setRecordDeduction] = useState(0);  
  const [dailyExpenses,setDailyExpenses]=useState({
     discount : 0,
     upiPayment : 0,
@@ -145,6 +145,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
     const cashRecordsDeduction = addedRecords
       .filter(record => record.paymentMethod === "Cash")
       .reduce((total, record) => total + record.amount, 0);
+      setRecordDeduction(cashRecordsDeduction)
     
     setCashLeft(
       dailyExpenses.totalCash - dailyExpenses.breakageCash - dailyExpenses.discount +
@@ -206,7 +207,7 @@ export default function StockAdd({ shopName }: StockAddProps) {
 
 
   const handleSubmit =async ()=>{
-    const res = await addNewBillHistory(dailyExpenses,cashLeft,date,stockData,shopName,addedRecords)
+    const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords)
       if(res===200){
         toast.success("Bill history added successfully")
       setIsConfirmDialogOpen(false)
