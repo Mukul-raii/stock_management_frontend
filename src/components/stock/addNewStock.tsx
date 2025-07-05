@@ -14,6 +14,7 @@ export default function AddNewStock() {
     price: 0,
     shop: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
  
   const handleChange = (
@@ -32,12 +33,25 @@ export default function AddNewStock() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await add_new_stock(formData);
-    console.log(res);
-    if (res === 200) {
-      toast.success("Stock added successfully");
-    }else{
-      toast.success("Error adding stock")
+    setIsSubmitting(true);
+    try {
+      const res = await add_new_stock(formData);
+      console.log(res);
+      if (res === 200) {
+        toast.success("Stock added successfully");
+        setFormData({
+          product: "",
+          size: 0,
+          price: 0,
+          shop: "",
+        });
+      } else {
+        toast.error("Error adding stock")
+      }
+    } catch (error) {
+      toast.error("Error adding stock")
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -118,8 +132,8 @@ export default function AddNewStock() {
           </div>
         </div>
 
-        <Button type="submit" className="w-full mt-6">
-          Add Stock
+        <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+          {isSubmitting ? "Adding Stock..." : "Add Stock"}
         </Button>
       </form>
     </div>

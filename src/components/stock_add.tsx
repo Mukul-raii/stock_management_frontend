@@ -95,7 +95,8 @@ export default function StockAdd({ shopName }: StockAddProps) {
   const [isMainDialogOpen, setIsMainDialogOpen] = useState(false);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
   const [addedRecords, setAddedRecords] = useState<RecordType[]>([]);
-const [recordDeduction, setRecordDeduction] = useState(0);  
+const [recordDeduction, setRecordDeduction] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);  
  const [dailyExpenses,setDailyExpenses]=useState({
     discount : 0,
     upiPayment : 0,
@@ -207,15 +208,22 @@ const [recordDeduction, setRecordDeduction] = useState(0);
 
 
   const handleSubmit =async ()=>{
-    const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords)
+    setIsSubmitting(true)
+    try {
+      const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords)
       if(res===200){
         toast.success("Bill history added successfully")
-      setIsConfirmDialogOpen(false)
-      setIsMainDialogOpen(false)
-      // Reset added records after successful submission
-      setAddedRecords([])
-    }else{
+        setIsConfirmDialogOpen(false)
+        setIsMainDialogOpen(false)
+        // Reset added records after successful submission
+        setAddedRecords([])
+      }else{
+        toast.error("Error in bill history")
+      }
+    } catch (error) {
       toast.error("Error in bill history")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -323,9 +331,11 @@ const [recordDeduction, setRecordDeduction] = useState(0);
       </Card>
 
       <div className="flex justify-end">
-        <Dialog open={isMainDialogOpen} onOpenChange={setIsMainDialogOpen}>
+        <Dialog open={isMainDialogOpen} onOpenChange={(open) => !isSubmitting && setIsMainDialogOpen(open)}>
           <DialogTrigger asChild>
-            <Button onClick={() => setIsMainDialogOpen(true)}>Submit Daily Report</Button>
+            <Button onClick={() => setIsMainDialogOpen(true)} disabled={isSubmitting}>
+              {isSubmitting ? "Processing..." : "Submit Daily Report"}
+            </Button>
           </DialogTrigger>
           <DialogContent className="md:max-w-3xl">
             <DialogHeader>
@@ -411,9 +421,9 @@ const [recordDeduction, setRecordDeduction] = useState(0);
                 <Card>
                   <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-lg">Daily Expenses</CardTitle>
-                    <Dialog open={isAddRecordDialogOpen} onOpenChange={setIsAddRecordDialogOpen}>
+                    <Dialog open={isAddRecordDialogOpen} onOpenChange={(open) => !isSubmitting && setIsAddRecordDialogOpen(open)}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="ml-auto">
+                        <Button variant="outline" size="sm" className="ml-auto" disabled={isSubmitting}>
                           <Plus className="h-4 w-4 mr-2" />
                           Add Record
                         </Button>
@@ -427,7 +437,7 @@ const [recordDeduction, setRecordDeduction] = useState(0);
                         </DialogHeader>
                         <AddNewRecord onRecordAdded={handleRecordAdded} />
                         <DialogFooter>
-                          <Button variant="outline" onClick={() => setIsAddRecordDialogOpen(false)}>
+                          <Button variant="outline" onClick={() => setIsAddRecordDialogOpen(false)} disabled={isSubmitting}>
                             Close
                           </Button>
                         </DialogFooter>
@@ -508,11 +518,13 @@ const [recordDeduction, setRecordDeduction] = useState(0);
 
             <DialogFooter className="flex justify-between items-center">
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" disabled={isSubmitting}>Cancel</Button>
               </DialogClose>
-              <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+              <Dialog open={isConfirmDialogOpen} onOpenChange={(open) => !isSubmitting && setIsConfirmDialogOpen(open)}>
                 <DialogTrigger asChild>
-                  <Button>Confirm Submission</Button>
+                  <Button disabled={isSubmitting}>
+                    {isSubmitting ? "Processing..." : "Confirm Submission"}
+                  </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
@@ -522,10 +534,12 @@ const [recordDeduction, setRecordDeduction] = useState(0);
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end gap-2 pt-4">
-                    <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>
+                    <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)} disabled={isSubmitting}>
                       Cancel
                     </Button>
-                    <Button onClick={handleSubmit}>Submit</Button>
+                    <Button onClick={handleSubmit} disabled={isSubmitting}>
+                      {isSubmitting ? "Processing..." : "Submit"}
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>

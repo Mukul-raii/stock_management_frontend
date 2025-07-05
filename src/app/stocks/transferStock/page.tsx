@@ -50,15 +50,20 @@ export default function TransferStocks() {
   };
 
   async function handleTransfer (){
+    setIsLoading(true);
     try {
       const response = await transferStock(fromshop, newQuantities);
       console.log("response ",response);
       
       setIsSuccess(true)
-      toast.success("Bill history added successfully")
+      toast.success("Stock transfer completed successfully")
+      setNewQuantities({});
       console.log(response);
     } catch (error) {
-      console.error("Error in addNewBillHistory:", error);
+      console.error("Error in transferStock:", error);
+      toast.error("Error transferring stock");
+    } finally {
+      setIsLoading(false);
     }
 }
 const totalItemsToTransfer = Object.values(newQuantities).filter((qty) => qty > 0).length
