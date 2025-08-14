@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Calendar, CreditCard, DollarSign, FileText, Search, TrendingUp, TrendingDown, Truck, Home, Beer, Wine, IndianRupee } from 'lucide-react'
+import { Calendar, CreditCard, FileText, Search, TrendingUp, TrendingDown, Truck, Home, Beer, Wine, IndianRupee } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 export default function BillhistoryData({ data }: { data: BillType[] }) {
   const [searchTerm, setSearchTerm] = useState("")
@@ -162,7 +163,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                 <TableCaption className="text-center text-muted-foreground py-4">
                   A comprehensive list of your recent invoices and financial records.
                 </TableCaption>
-                <TableHeader className="bg-muted/50">
+        <TableHeader className="bg-muted/50">
                   <TableRow>
                     <TableHead className="font-medium whitespace-nowrap">Date</TableHead>
                     <TableHead className="font-medium whitespace-nowrap">Total Sale</TableHead>
@@ -176,6 +177,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                     <TableHead className="font-medium whitespace-nowrap">Rate Difference</TableHead>
                     <TableHead className="font-medium whitespace-nowrap">Rent</TableHead>
                     <TableHead className="font-medium whitespace-nowrap">Transportation</TableHead>
+          <TableHead className="font-medium whitespace-nowrap">Invoice PDF</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -257,11 +259,24 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                             {formatCurrency(invoice.transportation)}
                           </div>
                         </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/pdf/${invoice.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="View invoice PDF"
+                          >
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <FileText className="h-4 w-4" />
+                              View PDF
+                            </Button>
+                          </a>
+                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={12} className="h-60 text-center">
+                      <TableCell colSpan={13} className="h-60 text-center">
                         <div className="flex flex-col items-center justify-center py-8">
                           <div className="rounded-full bg-muted p-3 mb-3">
                             <FileText className="h-10 w-10 text-muted-foreground" />
