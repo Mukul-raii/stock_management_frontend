@@ -5,6 +5,7 @@ import Shop_Tab from "@/components/tabShop";
 import { Tabs, TabsContent } from "@radix-ui/react-tabs";
 import BillhistoryData from "@/components/billhistory/billhistoryData";
 import { fetchBillBookData } from "../action/billhistory";
+import { useAuth } from "@clerk/nextjs";
 
 
 
@@ -12,12 +13,18 @@ export default function BillHistory() {
   const [shop, setShop] = useState("Amariya");
   const [data ,setData]= useState<BillType[]>([])
   const [loading, setLoading] = useState(true);
+      const {getToken} = useAuth()
 
   useEffect(()=>{
     async function fetchData() {
         setLoading(true);
         try {
-          const res = await fetchBillBookData(shop);
+          const token=await getToken()
+          if(!token){
+            console.error("Failed to retrieve token");
+            return;
+          }
+          const res = await fetchBillBookData(shop, token);
           setData(res);
         } catch (error) {
           console.error("Error fetching bill data:", error);
