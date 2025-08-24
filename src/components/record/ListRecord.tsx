@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Search, DollarSign, Calendar, Store, FileText, CreditCard } from "lucide-react"
+import { useAuth } from "@clerk/nextjs"
 
 interface RecordType {
   id?:number;
