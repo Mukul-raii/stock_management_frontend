@@ -351,8 +351,8 @@ export default function Home() {
       const currentDay = currentDate.getDate();
 
       // Create daily sales maps for both years
-      const dailySalesMap2024: { [key: string]: number } = {};
-      const dailySalesMap2025: { [key: string]: number } = {};
+      const dailySalesMap2024: { [key: string]: { beer: number; desi: number } } = {};
+      const dailySalesMap2025: { [key: string]: { beer: number; desi: number } } = {};
 
       // Filter and aggregate data for 2024 from lastYearBills (Financial Year 2024-25: Apr 2024 to Mar 2025)
       const data2024 = Array.isArray(lastYearBills)
@@ -404,37 +404,36 @@ export default function Home() {
         }
       });
 
-      // Aggregate totalBeerSale per day for 2024
+      // Aggregate totalBeerSale and totalDesiSale per day for 2024
       data2024.forEach((bill) => {
         if (bill.pdfDate?.$date) {
           try {
             const billDate = new Date(bill.pdfDate.$date);
-            // For financial year display, we'll use the month/day format but adjust for financial year
             const month = billDate.getMonth();
             const day = billDate.getDate();
-            // Convert to financial year month (April = 1, May = 2, ..., March = 12)
             const financialMonth = month >= 3 ? month - 2 : month + 10;
             const dateKey = `${financialMonth}/${day}`;
-            dailySalesMap2024[dateKey] =
-              (dailySalesMap2024[dateKey] || 0) + (bill.totalBeerSale || 0);
+            dailySalesMap2024[dateKey] = dailySalesMap2024[dateKey] || { beer: 0, desi: 0 };
+            dailySalesMap2024[dateKey].beer += bill.totalBeerSale || 0;
+            dailySalesMap2024[dateKey].desi += bill.totalDesiSale || 0;
           } catch {
             // Skip invalid dates
           }
         }
       });
 
-      // Aggregate totalBeerSale per day for 2025
+      // Aggregate totalBeerSale and totalDesiSale per day for 2025
       data2025.forEach((bill) => {
         if (bill.pdfDate) {
           try {
             const billDate = new Date(bill.pdfDate);
             const month = billDate.getMonth();
             const day = billDate.getDate();
-            // Convert to financial year month (April = 1, May = 2, ..., March = 12)
             const financialMonth = month >= 3 ? month - 2 : month + 10;
             const dateKey = `${financialMonth}/${day}`;
-            dailySalesMap2025[dateKey] =
-              (dailySalesMap2025[dateKey] || 0) + (bill.totalBeerSale || 0);
+            dailySalesMap2025[dateKey] = dailySalesMap2025[dateKey] || { beer: 0, desi: 0 };
+            dailySalesMap2025[dateKey].beer += bill.totalBeerSale || 0;
+            dailySalesMap2025[dateKey].desi += bill.totalDesiSale || 0;
           } catch {
             // Skip invalid dates
           }
@@ -449,12 +448,11 @@ export default function Home() {
         day: number;
         displayDate: string;
         isFuture: boolean;
-        "2024": number;
-        "2025": number;
+        "2024": { beer: number; desi: number };
+        "2025": { beer: number; desi: number };
         needsUpdate?: boolean;
       }[] = [];
 
-      // Financial year months: April (4) to March (3 of next year)
       const financialYearMonths = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]; // April to March
       const monthNames = [
         "Apr",
@@ -472,16 +470,15 @@ export default function Home() {
       ];
 
       financialYearMonths.forEach((month, financialMonthIndex) => {
-        const financialMonth = financialMonthIndex + 1; // 1-12 for financial year
-        const year = month >= 3 ? 2025 : 2026; // April-Dec 2025, Jan-Mar 2026
+        const financialMonth = financialMonthIndex + 1;
+        const year = month >= 3 ? 2025 : 2026;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         for (let day = 1; day <= daysInMonth; day++) {
           const dateKey = `${financialMonth}/${day}`;
           const monthName = monthNames[financialMonthIndex];
-          const dayOfYear = financialMonthIndex * 31 + day; // For ordering
+          const dayOfYear = financialMonthIndex * 31 + day;
 
-          // Check if this date is in the future
           const currentFYMonth =
             currentMonth >= 3 ? currentMonth - 2 : currentMonth + 10;
 
@@ -489,8 +486,9 @@ export default function Home() {
             financialMonth > currentFYMonth ||
             (financialMonth === currentFYMonth && day > currentDay);
 
-          // For 2025 data, show 0 for future dates or actual value for past/current dates
-          const value2025 = isFutureDate ? 0 : dailySalesMap2025[dateKey] || 0;
+          const value2025 = isFutureDate
+            ? { beer: 0, desi: 0 }
+            : dailySalesMap2025[dateKey] || { beer: 0, desi: 0 };
 
           allDays.push({
             date: dateKey,
@@ -499,7 +497,7 @@ export default function Home() {
             day,
             displayDate: `${monthName} ${day}`,
             isFuture: isFutureDate,
-            "2024": dailySalesMap2024[dateKey] || 0,
+            "2024": dailySalesMap2024[dateKey] || { beer: 0, desi: 0 },
             "2025": value2025,
             needsUpdate: isFutureDate,
           });
@@ -561,7 +559,6 @@ export default function Home() {
               timestamp?: number,
               opts?: { dataPointIndex?: number }
             ) => {
-              // Show labels for first day of each month and last data point
               const dataIndex = opts?.dataPointIndex;
               if (dataIndex !== undefined) {
                 const dataPoint = data[dataIndex];
@@ -575,7 +572,7 @@ export default function Home() {
         },
         yaxis: {
           title: {
-            text: "Beer Sales (₹)",
+            text: "Sales (₹)",
           },
           labels: {
             formatter: (value: number) =>
@@ -601,32 +598,15 @@ export default function Home() {
             const value = series[seriesIndex][dataPointIndex];
             const year = w.globals.seriesNames[seriesIndex];
 
-            if (year === "2025" && dataPoint.isFuture) {
-              return `
-              <div class="bg-white p-3 border rounded shadow-lg">
-                <p class="font-medium">${dataPoint.displayDate}</p>
-                <p class="text-orange-600">2025: Update Needed</p>
-                <p style="color: #ef4444">2024: ₹${(dataPoint["2024"] || 0).toLocaleString("en-IN")}</p>
-              </div>
-            `;
-            }
-
-            const value2024 = dataPoint["2024"] || 0;
-
             return `
             <div class="bg-white p-3 border rounded shadow-lg">
               <p class="font-medium">${dataPoint.displayDate}</p>
               <p style="color: ${w.globals.colors[seriesIndex]}">${year}: ₹${(value || 0).toLocaleString("en-IN")}</p>
-              ${
-                seriesIndex === 0 && value2024 > 0
-                  ? `<p style="color: #ef4444">2024: ₹${value2024.toLocaleString("en-IN")}</p>`
-                  : ""
-              }
             </div>
           `;
           },
         },
-        colors: ["#22c55e", "#ef4444"], // Green for 2025, Red for 2024
+        colors: ["#22c55e", "#ef4444", "#3b82f6", "#f97316"], // Colors for Beer and Desi sales
         legend: {
           show: true,
           position: "top" as const,
@@ -641,12 +621,20 @@ export default function Home() {
       const data = chartData(shopName);
       return [
         {
-          name: "2025",
-          data: data.map((item) => item["2025"]),
+          name: "2025 Beer",
+          data: data.map((item) => item["2025"].beer),
         },
         {
-          name: "2024",
-          data: data.map((item) => item["2024"]),
+          name: "2025 Desi",
+          data: data.map((item) => item["2025"].desi),
+        },
+        {
+          name: "2024 Beer",
+          data: data.map((item) => item["2024"].beer),
+        },
+        {
+          name: "2024 Desi",
+          data: data.map((item) => item["2024"].desi),
         },
       ];
     },
@@ -660,7 +648,7 @@ export default function Home() {
     }));
   }, []);
 
-  // Memoize performance comparison calculation from June 1st onwards
+  // Fixing performanceComparison logic to ensure correct stats calculation
   const performanceComparison = useMemo(() => {
     const calculateShopPerformance = (shopName: string) => {
       const data = chartData(shopName);
@@ -675,10 +663,10 @@ export default function Home() {
       // Get data from June 1st onwards
       const dataFromJune1 = data.slice(june1Index);
 
-      // Find the last non-zero/non-undefined value for 2025
+      // Find the last non-zero/non-undefined value for 2025 (beer sales)
       let lastValidIndex = -1;
       for (let i = dataFromJune1.length - 1; i >= 0; i--) {
-        if (dataFromJune1[i]["2025"] > 0) {
+        if (dataFromJune1[i]["2025"].beer > 0 || dataFromJune1[i]["2025"].desi > 0) {
           lastValidIndex = i;
           break;
         }
@@ -689,25 +677,42 @@ export default function Home() {
       // Calculate totals from June 1st to the last valid 2025 data point
       const relevantData = dataFromJune1.slice(0, lastValidIndex + 1);
 
-      const total2024 = relevantData.reduce(
-        (sum, item) => sum + item["2024"],
+      const total2024Beer = relevantData.reduce(
+        (sum, item) => sum + item["2024"].beer,
         0
       );
-      const total2025 = relevantData.reduce(
-        (sum, item) => sum + item["2025"],
+      const total2025Beer = relevantData.reduce(
+        (sum, item) => sum + item["2025"].beer,
         0
       );
 
-      const difference = total2025 - total2024;
-      const percentageChange =
-        total2024 > 0 ? (difference / total2024) * 100 : 0;
+      const total2024Desi = relevantData.reduce(
+        (sum, item) => sum + item["2024"].desi,
+        0
+      );
+      const total2025Desi = relevantData.reduce(
+        (sum, item) => sum + item["2025"].desi,
+        0
+      );
+
+      const differenceBeer = total2025Beer - total2024Beer;
+      const percentageChangeBeer =
+        total2024Beer > 0 ? (differenceBeer / total2024Beer) * 100 : 0;
+
+      const differenceDesi = total2025Desi - total2024Desi;
+      const percentageChangeDesi =
+        total2024Desi > 0 ? (differenceDesi / total2024Desi) * 100 : 0;
 
       return {
-        total2024,
-        total2025,
-        difference,
-        percentageChange,
-        isAhead: difference > 0,
+        total2024Beer,
+        total2025Beer,
+        differenceBeer,
+        percentageChangeBeer,
+        total2024Desi,
+        total2025Desi,
+        differenceDesi,
+        percentageChangeDesi,
+        isAhead: differenceBeer > 0 || differenceDesi > 0,
         periodEnd: relevantData[relevantData.length - 1]?.displayDate || "",
         daysAnalyzed: relevantData.length,
       };
@@ -1243,113 +1248,53 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <div className="text-sm text-blue-600 font-medium">
-                          2024 Sales
+                          2024 Beer Sales
                         </div>
                         <div className="text-2xl font-bold text-blue-800">
                           {formatCurrency(
                             performanceComparison[
                               tab as keyof typeof performanceComparison
-                            ]?.total2024 || 0
+                            ]?.total2024Beer || 0
                           )}
                         </div>
                       </div>
 
                       <div className="bg-green-50 p-4 rounded-lg">
                         <div className="text-sm text-green-600 font-medium">
-                          2025 Sales
+                          2025 Beer Sales
                         </div>
                         <div className="text-2xl font-bold text-green-800">
                           {formatCurrency(
                             performanceComparison[
                               tab as keyof typeof performanceComparison
-                            ]?.total2025 || 0
+                            ]?.total2025Beer || 0
                           )}
                         </div>
                       </div>
 
-                      <div
-                        className={`p-4 rounded-lg ${
-                          performanceComparison[
-                            tab as keyof typeof performanceComparison
-                          ]?.isAhead
-                            ? "bg-emerald-50"
-                            : "bg-red-50"
-                        }`}
-                      >
-                        <div
-                          className={`text-sm font-medium ${
-                            performanceComparison[
-                              tab as keyof typeof performanceComparison
-                            ]?.isAhead
-                              ? "text-emerald-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {performanceComparison[
-                            tab as keyof typeof performanceComparison
-                          ]?.isAhead
-                            ? "Ahead by"
-                            : "Behind by"}
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="text-sm text-blue-600 font-medium">
+                          2024 Desi Sales
                         </div>
-                        <div
-                          className={`text-2xl font-bold ${
-                            performanceComparison[
-                              tab as keyof typeof performanceComparison
-                            ]?.isAhead
-                              ? "text-emerald-800"
-                              : "text-red-800"
-                          }`}
-                        >
+                        <div className="text-2xl font-bold text-blue-800">
                           {formatCurrency(
-                            Math.abs(
-                              performanceComparison[
-                                tab as keyof typeof performanceComparison
-                              ]?.difference || 0
-                            )
+                            performanceComparison[
+                              tab as keyof typeof performanceComparison
+                            ]?.total2024Desi || 0
                           )}
                         </div>
                       </div>
 
-                      <div
-                        className={`p-4 rounded-lg ${
-                          (performanceComparison[
-                            tab as keyof typeof performanceComparison
-                          ]?.percentageChange || 0) >= 0
-                            ? "bg-emerald-50"
-                            : "bg-red-50"
-                        }`}
-                      >
-                        <div
-                          className={`text-sm font-medium ${
-                            (performanceComparison[
-                              tab as keyof typeof performanceComparison
-                            ]?.percentageChange || 0) >= 0
-                              ? "text-emerald-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          Percentage Change
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="text-sm text-green-600 font-medium">
+                          2025 Desi Sales
                         </div>
-                        <div
-                          className={`text-2xl font-bold ${
-                            (performanceComparison[
-                              tab as keyof typeof performanceComparison
-                            ]?.percentageChange || 0) >= 0
-                              ? "text-emerald-800"
-                              : "text-red-800"
-                          }`}
-                        >
-                          {(performanceComparison[
-                            tab as keyof typeof performanceComparison
-                          ]?.percentageChange || 0) > 0
-                            ? "+"
-                            : ""}
-                          {(
+                        <div className="text-2xl font-bold text-green-800">
+                          {formatCurrency(
                             performanceComparison[
                               tab as keyof typeof performanceComparison
-                            ]?.percentageChange || 0
-                          ).toFixed(1)}
-                          %
+                            ]?.total2025Desi || 0
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1378,7 +1323,7 @@ export default function Home() {
                             Math.abs(
                               performanceComparison[
                                 tab as keyof typeof performanceComparison
-                              ]?.difference || 0
+                              ]?.differenceBeer || 0
                             )
                           )}
                         </span>{" "}
@@ -1386,15 +1331,13 @@ export default function Home() {
                         {Math.abs(
                           performanceComparison[
                             tab as keyof typeof performanceComparison
-                          ]?.percentageChange || 0
+                          ]?.percentageChangeBeer || 0
                         ).toFixed(1)}
-                        %
-                        {(performanceComparison[
-                          tab as keyof typeof performanceComparison
-                        ]?.percentageChange || 0) >= 0
-                          ? " increase"
-                          : " decrease"}
-                        ).
+                        % Beer Sales, {Math.abs(
+                          performanceComparison[
+                            tab as keyof typeof performanceComparison
+                          ]?.percentageChangeDesi || 0
+                        ).toFixed(1)}% Desi Sales).
                       </p>
                     </div>
                   </CardContent>

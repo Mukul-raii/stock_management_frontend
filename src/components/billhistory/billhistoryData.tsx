@@ -48,7 +48,30 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
       month: "long", 
       day: "2-digit" 
     });
+
+    
   }
+  const testPDFRoute = async (invoiceId: number) => {
+  const url = `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/pdf/${invoiceId}`;
+  console.log('Testing URL:', url);
+  
+  try {
+    const response = await fetch(url);
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers));
+    
+    if (response.ok) {
+      console.log('✅ Route is working!');
+      return response.blob();
+    } else {
+      const errorText = await response.text();
+      console.log('❌ Error response:', errorText);
+    }
+  } catch (error) {
+    console.log('❌ Network error:', error);
+  }
+};
+
 
   // Filter data based on search term
   const filteredData = data && data.length > 0
@@ -261,9 +284,7 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
                           <a
-                            href={`${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/pdf/${invoice.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            onClick={() => testPDFRoute(invoice.id)}
                             title="View invoice PDF"
                           >
                             <Button variant="outline" size="sm" className="gap-2">
