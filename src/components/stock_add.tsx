@@ -223,7 +223,7 @@ const [recordDeduction, setRecordDeduction] = useState(0);
         setIsSubmitting(false)
         return;
       }
-      const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords,token)
+      const res = await addNewBillHistory(dailyExpenses, cashLeft + recordDeduction, date, stockData, shopName, token, addedRecords)
       if(res===200){
         toast.success("Bill history added successfully")
         setIsConfirmDialogOpen(false)

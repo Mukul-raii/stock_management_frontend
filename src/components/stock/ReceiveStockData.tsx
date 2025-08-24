@@ -48,6 +48,9 @@ export default function ReceiveStockData({ shopName, stockData ,refresh}: ShopPr
     setIsSubmitting(true)
     try {
       const token = await getToken()
+      if(!token){
+        return;
+      }
       const res = await receiveNewStock(shopName, newQuantities, token)
       setIsSuccess(true)
     toast.success("Stock received successfully")

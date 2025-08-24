@@ -65,7 +65,7 @@ export const addNewBillHistory = async (
   }[], // Ensure it's expecting an array
   shopName: string,
   token: string,
-  records?: RecordType[] // Add records parameter with proper type
+  records?: RecordType[] ,
 ) => {
   try {
     const response = await axios.post(
