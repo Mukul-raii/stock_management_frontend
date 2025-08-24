@@ -24,12 +24,18 @@ export default function ListRecord() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
+      const {getToken} = useAuth()
 
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true)
-        const res = await getAllRecords()
+        const token = await getToken();
+        if(!token) {
+          setError("Failed to load records. Please try again later.")
+          return;
+        }
+        const res = await getAllRecords(token);
         setData(res)
       } catch (err) {
         setError("Failed to load records. Please try again later.")

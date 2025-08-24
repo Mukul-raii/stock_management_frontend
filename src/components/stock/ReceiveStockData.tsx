@@ -27,6 +27,7 @@ import { AlertCircle, CheckCircle2, PackagePlus, Truck } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 interface ShopProps {
   shopName: string;
   stockData: any;
@@ -39,13 +40,15 @@ export default function ReceiveStockData({ shopName, stockData ,refresh}: ShopPr
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+      const {getToken} = useAuth()
 
 
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
     try {
-      const res = await receiveNewStock(shopName, newQuantities)
+      const token = await getToken()
+      const res = await receiveNewStock(shopName, newQuantities, token)
       setIsSuccess(true)
     toast.success("Stock received successfully")
       refresh(true)

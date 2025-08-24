@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 
 const TypeRecordProps: string[] = [
   "Purchase Stock",
@@ -71,7 +72,7 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState<number | string>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const {getToken} = useAuth()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -96,13 +97,19 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
     console.log("Captured record data:", recordData);
 
     try {
+      const token = await getToken();
+      if(!token) {
+        setIsSubmitting(false);
+        return;
+      }
       await addNewRecord(
         recordType,
         selectedShop || "",
         message,
         Number(amount),
         date,
-        selectedPaymentMethod
+        selectedPaymentMethod,
+        token
       );
 
       // Reset form only after successful submission

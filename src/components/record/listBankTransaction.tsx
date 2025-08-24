@@ -6,8 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Search, DollarSign, Calendar, Store, FileText, CreditCard, Landmark, Calendar1Icon } from "lucide-react"
-import {format, formatDate} from 'date-fns'
+import { Search, FileText, CreditCard, Landmark, Calendar1Icon } from "lucide-react"
+import { useAuth } from '@clerk/nextjs'
 
 
 
@@ -29,12 +29,18 @@ export const ListBankTransaction = () => {
 const [loading ,setLoading]=useState(false)
 const [data, setData] = useState<RecordType[]>([])
 const [error, setError] = useState("")
+      const {getToken} = useAuth()
 
    useEffect(() => {
       async function fetchData() {
         try {
           setLoading(true)
-          const res = await getAllBankTransaction()
+          const token = await getToken();
+          if(!token) {
+            setError("Failed to load records. Please try again later.")
+            return;
+          }
+          const res = await getAllBankTransaction(token)
           setData(res)
         } catch (err) {
           setError("Failed to load records. Please try again later.")

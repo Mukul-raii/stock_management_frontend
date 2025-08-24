@@ -8,12 +8,13 @@ interface FormData {
   shop: string;
 }
 
-export const getStocks = async (shop: string) => {
+export const getStocks = async (shop: string, token: string) => {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/stock/get_all_stocks?Shop=${shop}`,
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -27,7 +28,7 @@ export const getStocks = async (shop: string) => {
   }
 };
 
-export const add_new_stock = async (formdata: FormData) => {
+export const add_new_stock = async (formdata: FormData, token: string) => {
   try {
     console.log(formdata);
     const response = await axios.post(
@@ -35,6 +36,7 @@ export const add_new_stock = async (formdata: FormData) => {
       formdata,
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -62,6 +64,7 @@ export const addNewBillHistory = async (
     lastQuantity: number;
   }[], // Ensure it's expecting an array
   shopName: string,
+  token: string,
   records?: RecordType[] // Add records parameter with proper type
 ) => {
   try {
@@ -70,6 +73,7 @@ export const addNewBillHistory = async (
       { ...dailyExpenses, cashLeft, date, stockData, shopName, records },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -85,7 +89,8 @@ export const addNewBillHistory = async (
 
 export const receiveNewStock = async (
   shopName: string,
-  newQuantities: { [key: number]: number }
+  newQuantities: { [key: number]: number },
+  token: string
 ) => {
   try {
     const response = await axios.put(
@@ -93,6 +98,7 @@ export const receiveNewStock = async (
       { shopName, newQuantities },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Accept: "application/json",
         },
@@ -107,7 +113,8 @@ export const receiveNewStock = async (
 
 export const transferStock = async (
   fromshop: string,
-  newQuantities: { [key: number]: number }
+  newQuantities: { [key: number]: number },
+  token: string
 ) => {
   try {
     const response = await axios.put(
@@ -115,14 +122,14 @@ export const transferStock = async (
       { fromshop, newQuantities },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
     );
-    console.log(response.data);
 
-    return response.data;
+    return response.status;
   } catch (error) {
-    console.error("error while transfering ", error);
+    console.error("Error in transferStock:", error);
   }
 };

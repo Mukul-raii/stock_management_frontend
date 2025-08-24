@@ -7,12 +7,14 @@ import Shop_Tab from "../tabShop"
 import ReceiveStockData from "./ReceiveStockData"
 import { Card, CardContent } from "@/components/ui/card"
 import { PackageOpen, TruckIcon } from "lucide-react"
+import { useAuth } from "@clerk/nextjs"
 
 export default function ReceiveStockPage() {
   const [shop, setShop] = useState("Amariya")
   const [stockData, setStockData] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [refreshCount, setRefreshCount] = useState(false)
+      const {getToken} = useAuth()
 
   useEffect(() => {
     async function fetchdata() {
@@ -20,9 +22,15 @@ export default function ReceiveStockPage() {
       console.log("refresh ",refreshCount);
       
       try {
-        const res = await getStocks(shop)
-        setStockData(res)
-        setRefreshCount(false)
+        const token = await getToken();
+        if(!token){
+          console.error("Failed to retrieve token");
+          setIsLoading(false)
+          return;
+        }
+        const res = await getStocks(shop, token);
+        setStockData(res);
+        setRefreshCount(false);
       } catch (error) {
         console.error("Failed to fetch stock data:", error)
       } finally {

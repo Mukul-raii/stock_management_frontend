@@ -31,6 +31,7 @@ import {
 import lastYearBills from "../../public/test.billhistories.json";
 import { fetchBillBookData } from "./action/billhistory";
 import { BillType } from "./billhistory/page";
+import { useAuth } from "@clerk/nextjs";
 
 // Define interfaces for historical bill data structure from JSON
 interface HistoricalBillData {
@@ -127,6 +128,7 @@ export default function Home() {
     Record<string, boolean>
   >({});
   const [tab, setTab] = useState("Vamanpuri");
+      const {getToken} = useAuth()
 
   // Memoize computed data
   const locationData = useMemo(
@@ -727,9 +729,15 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await getDashboardData();
-        const AmariyaData = await fetchBillBookData("Amariya");
-        const VamanpuriData = await fetchBillBookData("Vamanpuri");
+        const token = await getToken();
+        if(!token){
+          console.error("Failed to retrieve token");
+          setLoading(false);
+          return;
+        }
+        const res = await getDashboardData(token);
+        const AmariyaData = await fetchBillBookData("Amariya", token);
+        const VamanpuriData = await fetchBillBookData("Vamanpuri", token);
         setLatestData({ AmariyaData, VamanpuriData });
         setDashboardData(res);
 

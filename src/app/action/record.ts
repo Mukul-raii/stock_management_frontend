@@ -6,7 +6,8 @@ export const addNewRecord = async (
   message: string,
   amount: number,
   date: Date,
-  selectedPaymentMethod: string
+  selectedPaymentMethod: string,
+  token: string
 ) => {
   try {
     const res = await axios.post(
@@ -21,6 +22,7 @@ export const addNewRecord = async (
       },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -34,12 +36,13 @@ export const addNewRecord = async (
   }
 };
 
-export const getAllRecords = async () => {
+export const getAllRecords = async (token: string) => {
   try {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/get_all_records`,
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -52,33 +55,43 @@ export const getAllRecords = async () => {
   }
 };
 
-export const getAllBankTransaction = async ()=>{
-try {
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API}/record/get_all_banks_statement`)
-  console.log(res);
-  
-  return res.data
-} catch (error) {
-  console.log(error);
+export const getAllBankTransaction = async (token: string) => {
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/record/get_all_banks_statement`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      }
+    );
+    console.log(res);
 
-  return null
-}
-}
+    return res.data;
+  } catch (error) {
+    console.log(error);
+
+    return null;
+  }
+};
 
 export const bankTransaction = async (
   amount: number,
   transactionType: string,
   selectedAccount: string,
-  paymentMethod:string,
-  message:string,
-  structuredDate:Date | undefined
+  paymentMethod: string,
+  message: string,
+  structuredDate: Date | undefined,
+  token: string
 ) => {
   try {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/bank_transaction`,
-      { amount, transactionType, selectedAccount,paymentMethod,message,structuredDate },
+      { amount, transactionType, selectedAccount, paymentMethod, message, structuredDate },
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
@@ -92,18 +105,20 @@ export const bankTransaction = async (
   }
 };
 
-export const getDashboardData = async () => {
+export const getDashboardData = async (token: string) => {
   try {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_API}/record/dashboard`,
       {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       }
     );
     return res.data;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };

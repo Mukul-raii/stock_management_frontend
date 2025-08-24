@@ -26,6 +26,7 @@ import { useDate } from "@/hooks/setDate";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useAuth } from "@clerk/nextjs";
 const bankAccounts = [
   "Current Bank",
   "Saving Bank (Nana)",
@@ -45,6 +46,7 @@ export default function AddBankTransaction() {
     message: string;
   }>({ status: null, message: "" });
   const structuredDate = useDate(date);
+      const {getToken} = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +54,21 @@ export default function AddBankTransaction() {
     setFeedback({ status: null, message: "" });
 
     try {
+      const token = await getToken();
+      if (!token) {
+        toast.error("Failed to retrieve token");
+        setIsSubmitting(false);
+        return;
+      }
+
       const res = await bankTransaction(
         parseInt(amount),
         transactionType,
         selectedAccount,
         paymentMethod,
         message,
-        structuredDate
+        structuredDate,
+        token
       );
 
       if (res) {

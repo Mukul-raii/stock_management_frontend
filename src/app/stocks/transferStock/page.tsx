@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 
 export default function TransferStocks() {
   const [fromshop, setFromShop] = useState("Amariya");
@@ -31,11 +32,17 @@ export default function TransferStocks() {
   const [newQuantities, setNewQuantities] = useState<{ [key: number]: number }>({});
   const [isSuccess,setIsSuccess]=useState(false)
   const [isLoading, setIsLoading] = useState(false);
+      const {getToken} = useAuth()
 
 
   useEffect(() => {
     async function fetchData() {
-      const getStockData = await getStocks(fromshop);
+      const token = await getToken();
+      if(!token){
+        console.error("Failed to retrieve token");
+        return;
+      }
+      const getStockData = await getStocks(fromshop,token);
 
       setStockData(getStockData);
     }
@@ -52,7 +59,13 @@ export default function TransferStocks() {
   async function handleTransfer (){
     setIsLoading(true);
     try {
-      const response = await transferStock(fromshop, newQuantities);
+      const token = await getToken();
+      if(!token){
+        console.error("Failed to retrieve token");
+        setIsLoading(false);
+        return;
+      }
+      const response = await transferStock(fromshop, newQuantities, token);
       console.log("response ",response);
       
       setIsSuccess(true)

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { add_new_stock } from "@/app/action/stock";
 import { LucideArrowDownToDot } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 
 export default function AddNewStock() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function AddNewStock() {
     shop: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+      const {getToken} = useAuth()
 
  
   const handleChange = (
@@ -35,7 +37,13 @@ export default function AddNewStock() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await add_new_stock(formData);
+      const token = await getToken()
+      if(!token){
+        console.error("Failed to retrieve token");
+        setIsSubmitting(false);
+        return;
+      }
+      const res = await add_new_stock(formData,token);
       console.log(res);
       if (res === 200) {
         toast.success("Stock added successfully");

@@ -37,6 +37,7 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import AddNewRecord from "@/components/record/AddNewRecord";
+import { useAuth } from "@clerk/nextjs";
 
 interface StockAddProps{
     shopName:string
@@ -109,7 +110,8 @@ const [recordDeduction, setRecordDeduction] = useState(0);
     totalBeerSale:0,
     totalLiquorSale:0
   })
-  
+        const {getToken} = useAuth()
+
   useEffect(()=>{
     let totalCash = 0 ;
     let totalLiquorSale = 0;
@@ -157,7 +159,12 @@ const [recordDeduction, setRecordDeduction] = useState(0);
 
   useEffect(() => {
     async function  fetchdata  ()  {
-    const result = await getStocks(shopName)  
+      const token = await getToken();
+      if(!token){
+        console.error("Failed to retrieve token");
+        return;
+      }
+    const result = await getStocks(shopName,token)  
     console.log({result});
     
     const updatedstock =result?.map((item:ItemType)=>({
@@ -210,7 +217,13 @@ const [recordDeduction, setRecordDeduction] = useState(0);
   const handleSubmit =async ()=>{
     setIsSubmitting(true)
     try {
-      const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords)
+      const token = await getToken()
+      if(!token){
+        console.error("Failed to retrieve token");
+        setIsSubmitting(false)
+        return;
+      }
+      const res = await addNewBillHistory(dailyExpenses,cashLeft+recordDeduction,date,stockData,shopName,addedRecords,token)
       if(res===200){
         toast.success("Bill history added successfully")
         setIsConfirmDialogOpen(false)
