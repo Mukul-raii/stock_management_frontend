@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import {format} from 'date-fns-tz'
-import { BillType } from "@/app/billhistory/page"
+import { useState } from "react";
+import { format } from "date-fns-tz";
+import { BillType } from "@/app/billhistory/page";
 import {
   Table,
   TableBody,
@@ -11,75 +11,116 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Calendar, CreditCard, FileText, Search, TrendingUp, TrendingDown, Truck, Home, Beer, Wine, IndianRupee } from 'lucide-react'
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Calendar,
+  CreditCard,
+  FileText,
+  Search,
+  TrendingUp,
+  TrendingDown,
+  Truck,
+  Home,
+  Beer,
+  Wine,
+  IndianRupee,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@clerk/nextjs";
+import { getAuth } from "@clerk/nextjs/server";
 
 export default function BillhistoryData({ data }: { data: BillType[] }) {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const { getToken } = useAuth();
   // Calculate summary data
-  const summaryData = data && data.length > 0 
-    ? {
-        totalSales: data.reduce((sum, item) => sum + item.totalSale, 0),
-        totalCash: data.reduce((sum, item) => sum + item.totalCashReceived, 0),
-        totalUpi: data.reduce((sum, item) => sum + item.upiPayment, 0),
-        totalLiquor: data.reduce((sum, item) => sum + item.totalDesiSale, 0),
-        totalBeer: data.reduce((sum, item) => sum + item.totalBeerSale, 0),
-      }
-    : null
+  const summaryData =
+    data && data.length > 0
+      ? {
+          totalSales: data.reduce((sum, item) => sum + item.totalSale, 0),
+          totalCash: data.reduce(
+            (sum, item) => sum + item.totalCashReceived,
+            0
+          ),
+          totalUpi: data.reduce((sum, item) => sum + item.upiPayment, 0),
+          totalLiquor: data.reduce((sum, item) => sum + item.totalDesiSale, 0),
+          totalBeer: data.reduce((sum, item) => sum + item.totalBeerSale, 0),
+        }
+      : null;
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   // Format date for display
   const formatDate = (dateString: Date) => {
-    return new Date(dateString).toLocaleDateString("en-US", { 
-      year: "numeric", 
-      month: "long", 
-      day: "2-digit" 
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
     });
-
-    
-  }
+  };
   const testPDFRoute = async (invoiceId: number) => {
-  const url = `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/pdf/${invoiceId}`;
-  console.log('Testing URL:', url);
-  
-  try {
-    const response = await fetch(url);
-    console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers));
-    
-    if (response.ok) {
-      console.log('✅ Route is working!');
-      return response.blob();
-    } else {
-      const errorText = await response.text();
-      console.log('❌ Error response:', errorText);
-    }
-  } catch (error) {
-    console.log('❌ Network error:', error);
-  }
-};
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_API}/billhistory/pdf/${invoiceId}`;
+    console.log("Testing URL:", url);
 
+    try {
+      const token = await getToken();
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // 👈 add token
+          Accept: "application/pdf", // 👈 tell server we expect PDF
+        },
+      });
+      console.log("Response status:", response.status, response);
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/pdf")) {
+          const blob = await response.blob();
+          const pdfUrl = URL.createObjectURL(blob);
+          window.open(pdfUrl, "_blank"); // 🚀 should open now
+        } else {
+          // If backend sent something else, log it
+          const text = await response.text();
+          console.error("⚠️ Not a PDF response:", text);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error("❌ Error response:", errorText);
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+    }
+  };
 
   // Filter data based on search term
-  const filteredData = data && data.length > 0
-  ? data.filter(item => {
-      const dateObj = new Date(item.pdfDate);
-      return !isNaN(dateObj.getTime()) && 
-        format(dateObj,"yyyy-MM-dd HH:mm:ss zzz",{ timeZone: 'Asia/Kolkata' }).includes(searchTerm)
-    }): [];
+  const filteredData =
+    data && data.length > 0
+      ? data.filter((item) => {
+          const dateObj = new Date(item.pdfDate);
+          return (
+            !isNaN(dateObj.getTime()) &&
+            format(dateObj, "yyyy-MM-dd HH:mm:ss zzz", {
+              timeZone: "Asia/Kolkata",
+            }).includes(searchTerm)
+          );
+        })
+      : [];
 
   return (
     <div className="space-y-6">
@@ -90,8 +131,12 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Sales</p>
-                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalSales)}</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Sales
+                  </p>
+                  <h3 className="text-2xl font-bold mt-1">
+                    {formatCurrency(summaryData.totalSales)}
+                  </h3>
                 </div>
                 <div className="bg-blue-100 p-2 rounded-full">
                   <TrendingUp className="h-5 w-5 text-blue-600" />
@@ -99,13 +144,17 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-br from-green-50 to-white border-none shadow-md">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Cash Received</p>
-                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalCash)}</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Cash Received
+                  </p>
+                  <h3 className="text-2xl font-bold mt-1">
+                    {formatCurrency(summaryData.totalCash)}
+                  </h3>
                 </div>
                 <div className="bg-green-100 p-2 rounded-full">
                   <IndianRupee className="h-5 w-5 text-green-600" />
@@ -113,13 +162,17 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">UPI Payments</p>
-                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalUpi)}</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    UPI Payments
+                  </p>
+                  <h3 className="text-2xl font-bold mt-1">
+                    {formatCurrency(summaryData.totalUpi)}
+                  </h3>
                 </div>
                 <div className="bg-purple-100 p-2 rounded-full">
                   <CreditCard className="h-5 w-5 text-purple-600" />
@@ -127,13 +180,17 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-br from-amber-50 to-white border-none shadow-md">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Liquor Sales</p>
-                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalLiquor)}</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Liquor Sales
+                  </p>
+                  <h3 className="text-2xl font-bold mt-1">
+                    {formatCurrency(summaryData.totalLiquor)}
+                  </h3>
                 </div>
                 <div className="bg-amber-100 p-2 rounded-full">
                   <Wine className="h-5 w-5 text-amber-600" />
@@ -141,13 +198,17 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-br from-yellow-50 to-white border-none shadow-md">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Beer Sales</p>
-                  <h3 className="text-2xl font-bold mt-1">{formatCurrency(summaryData.totalBeer)}</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Beer Sales
+                  </p>
+                  <h3 className="text-2xl font-bold mt-1">
+                    {formatCurrency(summaryData.totalBeer)}
+                  </h3>
                 </div>
                 <div className="bg-yellow-100 p-2 rounded-full">
                   <Beer className="h-5 w-5 text-yellow-600" />
@@ -163,7 +224,9 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
         <CardHeader className="pb-2">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className="text-xl font-bold">Invoice History</CardTitle>
+              <CardTitle className="text-xl font-bold">
+                Invoice History
+              </CardTitle>
               <CardDescription>
                 View and manage all your invoice records
               </CardDescription>
@@ -184,37 +247,72 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
             <div className="overflow-x-auto">
               <Table>
                 <TableCaption className="text-center text-muted-foreground py-4">
-                  A comprehensive list of your recent invoices and financial records.
+                  A comprehensive list of your recent invoices and financial
+                  records.
                 </TableCaption>
-        <TableHeader className="bg-muted/50">
+                <TableHeader className="bg-muted/50">
                   <TableRow>
-                    <TableHead className="font-medium whitespace-nowrap">Date</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Total Sale</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Cash Received</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">UPI Payment</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Discount</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Liquor Sale</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Beer Sale</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Breakage Expense</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Canteen Income</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Rate Difference</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Rent</TableHead>
-                    <TableHead className="font-medium whitespace-nowrap">Transportation</TableHead>
-          <TableHead className="font-medium whitespace-nowrap">Invoice PDF</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Date
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Total Sale
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Cash Received
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      UPI Payment
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Discount
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Liquor Sale
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Beer Sale
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Breakage Expense
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Canteen Income
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Rate Difference
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Rent
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Transportation
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Invoice PDF
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredData.length > 0 ? (
                     filteredData.map((invoice) => (
-                      <TableRow key={invoice.id} className="hover:bg-muted/50 transition-colors">
+                      <TableRow
+                        key={invoice.id}
+                        className="hover:bg-muted/50 transition-colors"
+                      >
                         <TableCell className="font-medium whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                            {invoice.date ? formatDate((invoice.pdfDate)) : "Invalid Date"}
+                            {invoice.date
+                              ? formatDate(invoice.pdfDate)
+                              : "Invalid Date"}
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
+                          <Badge
+                            variant="outline"
+                            className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
+                          >
                             {formatCurrency(invoice.totalSale)}
                           </Badge>
                         </TableCell>
@@ -253,20 +351,30 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
                           {invoice.breakageCash ? (
-                            <span className="text-red-600">{formatCurrency(invoice.breakageCash)}</span>
+                            <span className="text-red-600">
+                              {formatCurrency(invoice.breakageCash)}
+                            </span>
                           ) : (
                             <span className="text-muted-foreground">₹ 0</span>
                           )}
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
                           {invoice.canteenCash ? (
-                            <span className="text-green-600">{formatCurrency(invoice.canteenCash)}</span>
+                            <span className="text-green-600">
+                              {formatCurrency(invoice.canteenCash)}
+                            </span>
                           ) : (
                             <span className="text-muted-foreground">₹ 0</span>
                           )}
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
-                          <span className={invoice.rateDiff > 0 ? "text-green-600" : "text-red-600"}>
+                          <span
+                            className={
+                              invoice.rateDiff > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }
+                          >
                             {formatCurrency(invoice.rateDiff)}
                           </span>
                         </TableCell>
@@ -283,15 +391,15 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                           </div>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
-                          <a
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
                             onClick={() => testPDFRoute(invoice.id)}
-                            title="View invoice PDF"
                           >
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <FileText className="h-4 w-4" />
-                              View PDF
-                            </Button>
-                          </a>
+                            <FileText className="h-4 w-4" />
+                            View PDF
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))
@@ -302,9 +410,11 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
                           <div className="rounded-full bg-muted p-3 mb-3">
                             <FileText className="h-10 w-10 text-muted-foreground" />
                           </div>
-                          <h3 className="text-lg font-medium">No invoice data available</h3>
+                          <h3 className="text-lg font-medium">
+                            No invoice data available
+                          </h3>
                           <p className="text-sm text-muted-foreground mt-1 max-w-md">
-                            {searchTerm 
+                            {searchTerm
                               ? "No results match your search criteria. Try adjusting your search terms."
                               : "Please select a different shop or check back later when more data is available."}
                           </p>
@@ -324,5 +434,5 @@ export default function BillhistoryData({ data }: { data: BillType[] }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
