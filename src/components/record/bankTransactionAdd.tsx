@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { useAuth } from "@clerk/nextjs";
 const bankAccounts = [
   "Current Bank",
+  "PNB Bank Account",
   "Saving Bank (Nana)",
   "Saving Bank (Pooja)",
 ];
