@@ -129,7 +129,7 @@ export default function Home() {
     Record<string, boolean>
   >({});
   const [tab, setTab] = useState("Vamanpuri");
-      const {getToken} = useAuth()
+  const { getToken } = useAuth();
 
   // Memoize computed data
   const locationData = useMemo(
@@ -189,9 +189,10 @@ export default function Home() {
           name: bank,
           credit: data.credit || 0,
           debit: data.debit || 0,
-          balance: data.balance !== undefined 
-            ? data.balance 
-            : (data.credit || 0) - (data.debit || 0),
+          balance:
+            data.balance !== undefined
+              ? data.balance
+              : (data.credit || 0) - (data.debit || 0),
         })
       ),
     [dashboardData?.BankTransactions]
@@ -356,8 +357,12 @@ export default function Home() {
       const currentDay = currentDate.getDate();
 
       // Create daily sales maps for both years
-      const dailySalesMap2024: { [key: string]: { beer: number; desi: number } } = {};
-      const dailySalesMap2025: { [key: string]: { beer: number; desi: number } } = {};
+      const dailySalesMap2024: {
+        [key: string]: { beer: number; desi: number };
+      } = {};
+      const dailySalesMap2025: {
+        [key: string]: { beer: number; desi: number };
+      } = {};
 
       // Filter and aggregate data for 2024 from lastYearBills (Financial Year 2024-25: Apr 2024 to Mar 2025)
       const data2024 = Array.isArray(lastYearBills)
@@ -418,7 +423,10 @@ export default function Home() {
             const day = billDate.getDate();
             const financialMonth = month >= 3 ? month - 2 : month + 10;
             const dateKey = `${financialMonth}/${day}`;
-            dailySalesMap2024[dateKey] = dailySalesMap2024[dateKey] || { beer: 0, desi: 0 };
+            dailySalesMap2024[dateKey] = dailySalesMap2024[dateKey] || {
+              beer: 0,
+              desi: 0,
+            };
             dailySalesMap2024[dateKey].beer += bill.totalBeerSale || 0;
             dailySalesMap2024[dateKey].desi += bill.totalDesiSale || 0;
           } catch {
@@ -436,7 +444,10 @@ export default function Home() {
             const day = billDate.getDate();
             const financialMonth = month >= 3 ? month - 2 : month + 10;
             const dateKey = `${financialMonth}/${day}`;
-            dailySalesMap2025[dateKey] = dailySalesMap2025[dateKey] || { beer: 0, desi: 0 };
+            dailySalesMap2025[dateKey] = dailySalesMap2025[dateKey] || {
+              beer: 0,
+              desi: 0,
+            };
             dailySalesMap2025[dateKey].beer += bill.totalBeerSale || 0;
             dailySalesMap2025[dateKey].desi += bill.totalDesiSale || 0;
           } catch {
@@ -671,7 +682,10 @@ export default function Home() {
       // Find the last non-zero/non-undefined value for 2025 (beer sales)
       let lastValidIndex = -1;
       for (let i = dataFromJune1.length - 1; i >= 0; i--) {
-        if (dataFromJune1[i]["2025"].beer > 0 || dataFromJune1[i]["2025"].desi > 0) {
+        if (
+          dataFromJune1[i]["2025"].beer > 0 ||
+          dataFromJune1[i]["2025"].desi > 0
+        ) {
           lastValidIndex = i;
           break;
         }
@@ -733,7 +747,7 @@ export default function Home() {
     async function fetchData() {
       try {
         const token = await getToken();
-        if(!token){
+        if (!token) {
           console.error("Failed to retrieve token");
           setLoading(false);
           return;
@@ -1340,11 +1354,13 @@ export default function Home() {
                             tab as keyof typeof performanceComparison
                           ]?.percentageChangeBeer || 0
                         ).toFixed(1)}
-                        % Beer Sales, {Math.abs(
+                        % Beer Sales,{" "}
+                        {Math.abs(
                           performanceComparison[
                             tab as keyof typeof performanceComparison
                           ]?.percentageChangeDesi || 0
-                        ).toFixed(1)}% Desi Sales).
+                        ).toFixed(1)}
+                        % Desi Sales).
                       </p>
                     </div>
                   </CardContent>
