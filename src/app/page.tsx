@@ -74,6 +74,7 @@ interface RecordData {
 interface BankTransactionData {
   credit: number;
   debit: number;
+  balance?: number; // Optional balance calculated by backend for Current Bank
 }
 
 interface DashboardData {
@@ -188,7 +189,9 @@ export default function Home() {
           name: bank,
           credit: data.credit || 0,
           debit: data.debit || 0,
-          balance: (data.credit || 0) - (data.debit || 0),
+          balance: data.balance !== undefined 
+            ? data.balance 
+            : (data.credit || 0) - (data.debit || 0),
         })
       ),
     [dashboardData?.BankTransactions]
@@ -1176,9 +1179,7 @@ export default function Home() {
                               : "text-rose-600"
                           }`}
                         >
-                          {bank.name === "Current Bank"
-                            ? `${formatCurrency(dashboardData.MoneyCalculation.TotalBank)}`
-                            : `${formatCurrency(bank.credit)}`}
+                          {formatCurrency(bank.balance)}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -1188,9 +1189,7 @@ export default function Home() {
                             <span className="text-xs font-medium">Credits</span>
                           </div>
                           <div className="text-lg font-bold text-emerald-700">
-                            {bank.name === "Current Bank"
-                              ? `${formatCurrency(bank.balance + upiPayment)}`
-                              : `${formatCurrency(bank.balance)}`}
+                            {formatCurrency(bank.credit)}
                           </div>
                         </div>
                         <div className="bg-rose-50 p-3 rounded-lg">
