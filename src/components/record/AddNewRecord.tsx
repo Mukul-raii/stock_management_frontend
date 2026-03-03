@@ -72,7 +72,7 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState<number | string>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {getToken} = useAuth()
+  const { getToken } = useAuth();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -98,7 +98,7 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
 
     try {
       const token = await getToken();
-      if(!token) {
+      if (!token) {
         setIsSubmitting(false);
         return;
       }
@@ -281,6 +281,12 @@ export default function AddNewRecord({ onRecordAdded }: AddNewRecordProps) {
                       <div className="flex items-center">
                         <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
                         Current Bank Account
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="PNB Bank Account">
+                      <div className="flex items-center">
+                        <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
+                        PNB Bank Account
                       </div>
                     </SelectItem>
                     <SelectItem value="none">
