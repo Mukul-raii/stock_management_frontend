@@ -47,7 +47,7 @@ export default function AddBankTransaction() {
     message: string;
   }>({ status: null, message: "" });
   const structuredDate = useDate(date);
-      const {getToken} = useAuth()
+  const { getToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,6 +223,12 @@ export default function AddBankTransaction() {
                         className="text-blue-600"
                       >
                         By Current Bank
+                      </SelectItem>
+                      <SelectItem
+                        value="PNB Bank Account"
+                        className="text-blue-600"
+                      >
+                        By PNB Bank Account
                       </SelectItem>
                       <SelectItem value="By Cash" className="text-blue-600">
                         By Cash{" "}
